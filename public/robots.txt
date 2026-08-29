@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Update once the site is live on the institute domain.
+Sitemap: https://gymkhana.iitb.ac.in/~hostel4/sitemap.xml

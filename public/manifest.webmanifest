@@ -1,0 +1,20 @@
+{
+  "name": "MADHOUSE — Hostel 4, IIT Bombay",
+  "short_name": "Madhouse",
+  "description": "Mess menus, events, announcements, GC standings and maintenance for Hostel 4, IIT Bombay.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A0908",
+  "theme_color": "#0A0908",
+  "categories": ["education", "lifestyle"],
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Today's mess menu", "url": "./#/#today" },
+    { "name": "Report maintenance", "url": "./#/maintenance" },
+    { "name": "Events", "url": "./#/events" }
+  ]
+}

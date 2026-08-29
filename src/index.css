@@ -1,0 +1,212 @@
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/inter';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Surface tokens. Every colour the layout uses resolves through one of these
+   so light/dark stay in sync from a single place.
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    color-scheme: light;
+    --surface: 247 245 242;        /* page background        */
+    --surface-raised: 255 255 255; /* cards                  */
+    --surface-sunken: 237 234 229; /* wells, inputs          */
+    --border: 219 214 206;
+    --text: 17 16 16;
+    --text-muted: 97 91 83;
+    --accent: 238 90 0;
+    --accent-contrast: 255 255 255;
+    --nav-h: 4.5rem;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --surface: 10 9 8;
+    --surface-raised: 26 24 21;
+    --surface-sunken: 17 16 16;
+    --border: 43 40 35;
+    --text: 247 245 242;
+    --text-muted: 140 133 123;
+    --accent: 255 111 15;
+    --accent-contrast: 10 9 8;
+  }
+
+  * {
+    border-color: rgb(var(--border));
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--nav-h) + 1rem);
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: rgb(var(--surface));
+    color: rgb(var(--text));
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgb(var(--accent));
+    color: rgb(var(--accent-contrast));
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Focus ring — visible for keyboard users, invisible for mouse users. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Slim, theme-aware scrollbar. */
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--surface)); }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--border));
+    border: 3px solid rgb(var(--surface));
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--text-muted)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8 lg:px-12;
+  }
+
+  /* Frosted panel used by the navbar, command palette and overlay cards. */
+  .glass {
+    background-color: rgb(var(--surface-raised) / 0.72);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+
+  .card {
+    @apply rounded-2xl border transition-all duration-300 ease-smooth;
+    background-color: rgb(var(--surface-raised));
+    border-color: rgb(var(--border));
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-1 hover:shadow-lift;
+  }
+
+  /* Small uppercase label that sits above section headings. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.22em];
+    color: rgb(var(--text-muted));
+  }
+
+  .muted { color: rgb(var(--text-muted)); }
+
+  .hairline {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, rgb(var(--border)), transparent);
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-full
+           px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-200
+           ease-smooth active:scale-[.97] disabled:pointer-events-none disabled:opacity-45;
+  }
+  .btn-primary {
+    background-color: rgb(var(--accent));
+    color: rgb(var(--accent-contrast));
+  }
+  .btn-primary:hover { @apply shadow-glow; filter: brightness(1.06); }
+
+  .btn-ghost {
+    @apply border;
+    border-color: rgb(var(--border));
+    color: rgb(var(--text));
+  }
+  .btn-ghost:hover { background-color: rgb(var(--surface-sunken)); }
+
+  .btn-solid {
+    background-color: rgb(var(--text));
+    color: rgb(var(--surface));
+  }
+  .btn-solid:hover { filter: brightness(1.15); }
+
+  /* Chips / pills */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1
+           text-xs font-medium transition-colors duration-200;
+    border-color: rgb(var(--border));
+  }
+  .chip-active {
+    background-color: rgb(var(--accent));
+    border-color: rgb(var(--accent));
+    color: rgb(var(--accent-contrast));
+  }
+
+  /* Inputs */
+  .field {
+    @apply w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors;
+    background-color: rgb(var(--surface-sunken));
+    border-color: rgb(var(--border));
+    color: rgb(var(--text));
+  }
+  .field::placeholder { color: rgb(var(--text-muted)); }
+  .field:focus { border-color: rgb(var(--accent)); }
+
+  /* Cinematic dark band used to break up the page rhythm. */
+  .band-dark {
+    background-color: #0A0908;
+    color: #F7F5F2;
+  }
+
+  /* Oversized outlined display type for editorial moments. */
+  .outline-type {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(var(--text) / .28);
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden;
+    background-color: rgb(var(--surface-sunken));
+  }
+  .skeleton::after {
+    @apply absolute inset-0 animate-shimmer;
+    content: '';
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg, transparent, rgb(var(--border) / .55), transparent);
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .mask-fade-r {
+    -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent);
+    mask-image: linear-gradient(90deg, #000 78%, transparent);
+  }
+  /* Keeps long marquee/ticker rows from causing layout shift. */
+  .cv-auto { content-visibility: auto; contain-intrinsic-size: 600px; }
+}

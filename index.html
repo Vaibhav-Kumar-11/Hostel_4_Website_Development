@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0A0908" />
+
+    <title>MADHOUSE — Hostel 4, IIT Bombay</title>
+    <meta
+      name="description"
+      content="The official website of Hostel 4, IIT Bombay — known on campus as Madhouse. Mess menus, events, announcements, GC standings, facilities and maintenance, all in one place."
+    />
+    <meta name="author" content="Hostel 4, IIT Bombay" />
+
+    <!-- Open Graph / social preview -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MADHOUSE — Hostel 4, IIT Bombay" />
+    <meta property="og:title" content="MADHOUSE — Hostel 4, IIT Bombay" />
+    <meta
+      property="og:description"
+      content="1250+ Rooms. Thousands of Stories. One Madhouse. The digital home of Hostel 4, IIT Bombay."
+    />
+    <meta property="og:image" content="./images/hostel/hostel-exterior-night.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Start the hero photograph downloading before the JS bundle is parsed. -->
+    <link
+      rel="preload"
+      as="image"
+      href="./images/hostel/hostel-exterior-night.jpg"
+      fetchpriority="high"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+
+    <!--
+      Paint the correct theme before the first frame. Without this, a resident
+      on dark mode gets a white flash on every cold load.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('madhouse:theme')
+          var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches
+          var dark = stored ? stored === 'dark' : !prefersLight
+          document.documentElement.classList.toggle('dark', dark)
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+        } catch (e) {
+          /* private mode — fall back to the dark default already on <html> */
+        }
+      })()
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="padding: 2rem; font-family: system-ui, sans-serif">
+        <h1>MADHOUSE — Hostel 4, IIT Bombay</h1>
+        <p>
+          This site needs JavaScript enabled. To raise a maintenance complaint without it, use the
+          hostel CLR ticket system directly.
+        </p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
