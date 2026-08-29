@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { Outlet, useLocation } from 'react-router-dom'
 import { ArrowUp } from 'lucide-react'
 import Navbar from './Navbar'
@@ -77,18 +76,26 @@ export default function Layout() {
 
       <Navbar theme={theme} onToggleTheme={toggle} onOpenSearch={() => setPaletteOpen(true)} />
 
+      {/*
+        The page transition is a CSS animation keyed on the pathname, not a
+        JS one.
+
+        It used to be an <AnimatePresence mode="wait"> wrapper that started the
+        incoming page at opacity 0 and raised it on requestAnimationFrame. That
+        has a bad failure mode: whenever the browser stops issuing animation
+        frames — a backgrounded tab, an occluded window, battery saver, a
+        route chunk still resolving — the incoming page never leaves opacity 0.
+        The result is a fully rendered, correctly laid out, completely
+        invisible page. `mode="wait"` also held the new page back until the old
+        one finished exiting, adding a third of a second to every navigation.
+
+        A keyframe with `both` fill advances on wall-clock time and settles
+        visible regardless, and the new page paints immediately.
+      */}
       <main id="main" className="flex-1">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={reduced ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
+        <div key={location.pathname} className={reduced ? undefined : 'page-enter'}>
+          <Outlet />
+        </div>
       </main>
 
       <Footer />

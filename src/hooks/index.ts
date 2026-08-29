@@ -119,7 +119,15 @@ export function useInView<T extends HTMLElement>(
 
 /* ── Counters ────────────────────────────────────────────────────────────── */
 
-/** Eases a number from 0 to `target` once `active` flips true. */
+/**
+ * Eases a number from 0 to `target` once `active` flips true.
+ *
+ * The easing runs on requestAnimationFrame, which the browser stops issuing in
+ * a backgrounded or throttled tab. A timer set for the full duration therefore
+ * runs alongside it and snaps the counter to its final value; whichever
+ * finishes first, the number a resident reads is the correct one rather than a
+ * zero frozen mid-animation.
+ */
 export function useCountUp(target: number, active: boolean, duration = 1600): number {
   const [value, setValue] = useState(0)
   const reduced = useReducedMotion()
@@ -130,6 +138,7 @@ export function useCountUp(target: number, active: boolean, duration = 1600): nu
       setValue(target)
       return
     }
+
     let raf = 0
     const start = performance.now()
     const tick = (t: number) => {
@@ -140,7 +149,14 @@ export function useCountUp(target: number, active: boolean, duration = 1600): nu
       if (p < 1) raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+
+    // Wall-clock safety net; harmless when the animation already finished.
+    const settle = window.setTimeout(() => setValue(target), duration + 80)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.clearTimeout(settle)
+    }
   }, [active, target, duration, reduced])
 
   return value

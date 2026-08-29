@@ -1,15 +1,92 @@
-import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 import { AlertCircle, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
-import { useCountUp, useInView, useReducedMotion } from '@/hooks'
+import { useCountUp, useInView } from '@/hooks'
 
 /* ── Reveal ──────────────────────────────────────────────────────────────── */
 
+/**
+ * One IntersectionObserver shared by every Reveal on the page, rather than one
+ * per element. A long page mounts well over a hundred of these; a single
+ * observer keeps that to one callback and one set of bookkeeping.
+ */
+let sharedObserver: IntersectionObserver | null = null
+
+/** Elements armed but not yet revealed, so a recovery sweep can find them. */
+const pending = new Set<Element>()
+
+function reveal(el: Element) {
+  el.classList.add('is-visible')
+  pending.delete(el)
+  sharedObserver?.unobserve(el)
+}
+
+/** Reveals every armed element that is currently on screen. */
+function sweep() {
+  if (pending.size === 0) return
+  const h = window.innerHeight || document.documentElement.clientHeight
+  for (const el of [...pending]) {
+    const r = el.getBoundingClientRect()
+    if (r.top < h && r.bottom > 0) reveal(el)
+  }
+}
+
+/**
+ * Debounced sweep, run after a batch of elements arms itself.
+ *
+ * A route change mounts a fresh page of reveals with no scroll event to follow
+ * it, so without this the first screen of a newly navigated page would depend
+ * entirely on the observer firing.
+ */
+let sweepTimer = 0
+function scheduleSweep() {
+  window.clearTimeout(sweepTimer)
+  sweepTimer = window.setTimeout(sweep, 220)
+}
+
+/**
+ * Backstop for the observer.
+ *
+ * A tab that is hidden while loading runs no layout passes, so the observer
+ * reports nothing — and it can stay silent even after the tab is brought
+ * forward. Scrolling and visibility changes therefore trigger a direct
+ * geometry check, and one timed sweep shortly after load catches anything
+ * on screen that the observer missed outright.
+ *
+ * When the observer is behaving, `pending` drains through it and every one of
+ * these is a no-op. The cost of being wrong here is a page a resident cannot
+ * read, so it is worth the few lines.
+ */
+function installRecovery() {
+  if (typeof document === 'undefined') return
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) sweep()
+  })
+  window.addEventListener('scroll', sweep, { passive: true })
+  window.addEventListener('resize', sweep, { passive: true })
+  window.setTimeout(sweep, 1200)
+}
+
+function observer(): IntersectionObserver | null {
+  if (typeof IntersectionObserver === 'undefined') return null
+  if (!sharedObserver) {
+    sharedObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) reveal(entry.target)
+        }
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -8% 0px' },
+    )
+    installRecovery()
+  }
+  return sharedObserver
+}
+
 interface RevealProps {
   children: ReactNode
-  /** Stagger index — each step adds 60ms. */
+  /** Stagger index — each step adds 55ms to the transition delay. */
   delay?: number
   className?: string
   as?: 'div' | 'section' | 'li' | 'article' | 'span'
@@ -17,29 +94,57 @@ interface RevealProps {
 }
 
 /**
- * The single scroll-reveal used across the site. One implementation keeps the
- * motion language consistent, and it collapses to a plain element when the
- * visitor has asked for reduced motion.
+ * The single scroll-reveal used across the site.
+ *
+ * The animation itself lives in CSS (see `.reveal` in index.css) and this
+ * component only decides *when* to add the class. That split matters: a
+ * JS-driven opacity animation stops mid-flight whenever the browser stops
+ * issuing animation frames — a backgrounded tab, an occluded window, battery
+ * saver — and the content it was revealing never becomes visible again. A CSS
+ * transition advances on wall-clock time and always lands on its end state.
+ *
+ * If IntersectionObserver is unavailable the element is shown immediately,
+ * so the failure mode is "no animation", never "no content".
  */
-export function Reveal({ children, delay = 0, className, as = 'div', y = 20 }: RevealProps) {
-  const reduced = useReducedMotion()
-  const Component = motion[as]
+export function Reveal({ children, delay = 0, className, as: Tag = 'div', y = 20 }: RevealProps) {
+  const ref = useRef<HTMLElement | null>(null)
 
-  if (reduced) {
-    const Plain = as
-    return <Plain className={className}>{children}</Plain>
-  }
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+
+    const io = observer()
+    // No observer means no reveal animation; the element keeps its visible
+    // base style rather than being hidden with no way back.
+    if (!io) return
+
+    // Arming is what hides the element, and it happens only once we know an
+    // observer exists to unhide it again.
+    node.classList.add('reveal-armed')
+    pending.add(node)
+    io.observe(node)
+    scheduleSweep()
+
+    return () => {
+      pending.delete(node)
+      io.unobserve(node)
+    }
+  }, [])
 
   return (
-    <Component
-      className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
-      transition={{ duration: 0.7, delay: delay * 0.06, ease: [0.16, 1, 0.3, 1] }}
+    <Tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
+      className={cn('reveal', className)}
+      style={
+        {
+          '--reveal-delay': `${delay * 0.055}s`,
+          '--reveal-y': `${y}px`,
+        } as CSSProperties
+      }
     >
       {children}
-    </Component>
+    </Tag>
   )
 }
 
@@ -218,9 +323,26 @@ export function Stat({ value, text, suffix, label, note }: StatProps) {
   const { ref, inView } = useInView<HTMLDivElement>()
   const count = useCountUp(value ?? 0, inView)
 
+  /*
+    Word statistics need their own scale. A numeral like "1250" is four narrow
+    glyphs, but "INDIVIDUAL" is ten wide ones — set at the numeral's size it
+    runs past its column and collides with the statistic beside it. Long words
+    are stepped down so every cell stays inside its own grid track.
+  */
+  const sizeClass = text
+    ? text.length > 8
+      ? 'text-[clamp(1.5rem,3.1vw,2.5rem)]'
+      : 'text-[clamp(1.9rem,4.2vw,3.25rem)]'
+    : 'text-[clamp(2.5rem,7vw,4.5rem)]'
+
   return (
-    <div ref={ref} className="group relative">
-      <div className="text-[clamp(2.5rem,7vw,4.5rem)] font-display font-bold leading-none tracking-tighter">
+    <div ref={ref} className="group relative min-w-0">
+      <div
+        className={cn(
+          'font-display font-bold leading-none tracking-tighter break-words',
+          sizeClass,
+        )}
+      >
         {text ? (
           <span className="bg-gradient-to-br from-madhouse-400 to-madhouse-600 bg-clip-text text-transparent">
             {text}

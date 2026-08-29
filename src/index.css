@@ -199,6 +199,124 @@
   }
 }
 
+/* ───────────────────────────────────────────────────────────────────────────
+   MOTION
+   ───────────────────────────────────────────────────────────────────────────
+   Every animation that controls whether content is *visible* is defined here
+   in CSS rather than in JavaScript.
+
+   The reason is not stylistic. JS animation libraries drive themselves from
+   requestAnimationFrame, which the browser stops firing whenever a tab is
+   backgrounded, occluded, throttled on battery saver, or simply busy. An
+   element that starts at `opacity: 0` and waits for rAF to raise it can
+   therefore stay invisible forever — the page renders, lays out, and shows
+   nothing. CSS animations and transitions advance on wall-clock time instead,
+   so they always arrive at their final state even when nothing is painted.
+
+   Rule of thumb for this codebase: if an animation decides whether a resident
+   can read something, it belongs in this file. Motion that only decorates an
+   interaction (overlays, drag, layout morphs) may stay in JavaScript.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes rise-up {
+  from { transform: translateY(110%); }
+  to   { transform: none; }
+}
+
+@keyframes zoom-settle {
+  from { opacity: 0; transform: scale(1.12); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@layer components {
+  /*
+    Every rule below follows the same shape: the element's *resting* style is
+    the visible one, and the animation only plays it in.
+
+    `animation-fill-mode` is deliberately `forwards`, never `both`. `both`
+    would apply the keyframe's opening frame — opacity 0 — before the
+    animation starts and for as long as it is delayed or paused, which is the
+    trap this whole section exists to avoid. With `forwards`, an animation
+    that never starts leaves the element at its normal, readable style.
+  */
+  .page-enter {
+    animation: page-in 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /*
+    Scroll reveal, as progressive enhancement.
+
+    The base class is visible. `Reveal` adds `.reveal-armed` from JavaScript
+    at mount, which is what actually hides the element, and an
+    IntersectionObserver then adds `.is-visible`. If JavaScript is disabled,
+    if IntersectionObserver is missing, or if the observer never fires, the
+    element is simply never armed and the content reads normally.
+  */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-armed {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 20px));
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+  }
+  .reveal-armed.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Entrance helpers for the hero and page mastheads. */
+  .anim-rise {
+    animation: rise-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  .anim-rise-up {
+    animation: rise-up 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  .anim-zoom {
+    animation: zoom-settle 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+}
+
+/*
+  Reduced motion: show everything immediately. This must come after the rules
+  above so it wins, and it must set the *visible* state explicitly — the global
+  reduced-motion block only shortens durations, which would otherwise leave a
+  `.reveal` element sitting at opacity 0 until its observer fired.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-armed,
+  .reveal-armed.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .page-enter,
+  .anim-rise,
+  .anim-rise-up,
+  .anim-zoom {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
