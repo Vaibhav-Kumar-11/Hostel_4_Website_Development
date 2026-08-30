@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 import { events } from '@/data/events'
 import { categoryColor } from './Cards'
@@ -162,15 +161,12 @@ export default function EventCalendar({ onSelectEvent }: { onSelectEvent?: (id: 
           })}
         </h3>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selected}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="flex-1 space-y-3"
-          >
+        {/*
+          Keyed on the selected day so the panel replays its entrance on each
+          change. CSS rather than framer-motion: this panel holds the day's
+          events, and content must never be gated on an animation running.
+        */}
+        <div key={selected} className="anim-rise flex-1 space-y-3">
             {selectedEvents.length === 0 ? (
               <div className="muted flex h-full min-h-[9rem] flex-col items-center justify-center gap-3 text-center">
                 <CalendarDays size={22} />
@@ -206,8 +202,7 @@ export default function EventCalendar({ onSelectEvent }: { onSelectEvent?: (id: 
                 </button>
               ))
             )}
-          </motion.div>
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   )

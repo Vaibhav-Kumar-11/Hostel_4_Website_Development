@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Check, Clock } from 'lucide-react'
-import { MESS_DATA_VERIFIED, weekdayNames } from '@/data/mess'
+import { weekdayNames } from '@/data/mess'
 import { getMenuForDay, mealPhase, orderedMeals } from '@/lib/mess'
 import { useNow } from '@/hooks'
-import { PlaceholderNote, Reveal, Section, SectionHeading } from '@/components/ui/primitives'
+import { Reveal, Section, SectionHeading } from '@/components/ui/primitives'
+import MessMenuLink from './MessMenuLink'
 import { cn, formatTime } from '@/lib/utils'
 
 /**
@@ -35,21 +36,24 @@ export default function TodayAtMadhouse() {
         }
         description="Breakfast to late dinner, with the current meal marked live. Switch to the week view to plan ahead."
         action={
-          <div className="inline-flex rounded-full border p-1">
-            {(['today', 'tomorrow', 'week'] as View[]).map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={cn(
-                  'rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all duration-200',
-                  view === v
-                    ? 'bg-madhouse-500 text-white shadow-sm'
-                    : 'muted hover:text-[rgb(var(--text))]',
-                )}
-              >
-                {v}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-3">
+            <MessMenuLink />
+            <div className="inline-flex rounded-full border p-1">
+              {(['today', 'tomorrow', 'week'] as View[]).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setView(v)}
+                  className={cn(
+                    'rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all duration-200',
+                    view === v
+                      ? 'bg-madhouse-500 text-white shadow-sm'
+                      : 'muted hover:text-[rgb(var(--text))]',
+                  )}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
           </div>
         }
       />
@@ -109,9 +113,6 @@ export default function TodayAtMadhouse() {
                           {item}
                         </li>
                       ))}
-                      {items.length === 0 && (
-                        <li className="muted text-sm">Menu to be announced.</li>
-                      )}
                     </ul>
                   </article>
                 </Reveal>
@@ -121,16 +122,6 @@ export default function TodayAtMadhouse() {
         </>
       )}
 
-      {!MESS_DATA_VERIFIED && (
-        <Reveal delay={5}>
-          <PlaceholderNote className="mt-8">
-            Sample menu and timings. Replace the arrays in{' '}
-            <code className="font-mono">src/data/mess.ts</code> with the official mess schedule and
-            flip <code className="font-mono">MESS_DATA_VERIFIED</code> to <code>true</code> — this
-            note disappears and the live clock starts telling the truth.
-          </PlaceholderNote>
-        </Reveal>
-      )}
     </Section>
   )
 }

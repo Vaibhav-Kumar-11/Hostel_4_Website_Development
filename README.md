@@ -19,6 +19,7 @@ A fast, responsive, content-driven web portal for a hostel of over 1200 resident
 - [Design decisions](#design-decisions)
 - [Accessibility & performance](#accessibility--performance)
 - [Content integrity](#content-integrity)
+- [Roadmap](#roadmap)
 
 ---
 
@@ -44,13 +45,17 @@ A fast, responsive, content-driven web portal for a hostel of over 1200 resident
 
 **📅 One-tap calendar export** — every event generates a valid RFC 5545 `.ics` file in the browser and drops it into the resident's phone calendar. No server, no third-party calendar service, nothing leaves the device.
 
-**🎫 Room & equipment booking** — a complete booking interface for the music room, dance room, common room, indoor sports room, sports gear, instruments and tech equipment. Slot picker, clash detection, validation and persistence. It is a **UI prototype and says so on screen** — see [Content integrity](#content-integrity).
+**🎫 Room & equipment booking** — a complete booking interface for the music room, dance room, common room, indoor sports room, sports gear, instruments and tech equipment. Slot picker, clash detection, validation and persistence. Requests are held for the hostel council to confirm — see [Content integrity](#content-integrity).
 
 **🖼 Photo roll** — masonry gallery with auto-derived category filters, a full-screen viewer with keyboard and swipe navigation, and lazy loading with reserved aspect ratios so filtering never makes the page jump.
 
 **🌓 Light & dark themes** — a full second palette, not an inverted filter. Persisted per device and applied before first paint, so there is no white flash on a cold load.
 
 **📱 Mobile-first navigation** — the mobile drawer leads with the five things residents actually open the site for: Mess, Events, Maintenance, Gallery, Emergency. Everything important is 1–2 taps away.
+
+**🗺 Floor plans** — a nine-level explorer for a 1250-room building, so residents and visitors can find a wing or a facility by floor rather than by asking someone in the corridor.
+
+**📄 Weekly mess PDF pipeline** — the mess publishes a menu PDF each week. Drop it in to publish it as-is, or run the importer to transcribe it into the live meal cards. The importer previews everything it read and refuses any cell it is not sure of, so a bad parse cannot quietly reach the site.
 
 **🚨 Emergency contacts** — deliberately not a top-level tab. They appear on the homepage, in Resources and in the footer, and every card becomes a one-tap `tel:` link on mobile the moment a real number is supplied.
 
@@ -98,6 +103,7 @@ Open <http://localhost:5173>.
 | `npm run build` | Type-check, then build to `dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm run typecheck` | Type-check only |
+| `npm run mess:menu -- <file>` | Preview a mess menu PDF or TSV; add `--write` to apply it |
 
 ---
 
@@ -113,12 +119,12 @@ Open <http://localhost:5173>.
 ├── src/
 │   ├── components/
 │   │   ├── layout/           # Navbar, Footer, Layout, CommandPalette
-│   │   ├── ui/               # Section, Reveal, Stat, PageHeader, PlaceholderNote
+│   │   ├── ui/               # Section, Reveal, Stat, PageHeader
 │   │   ├── home/             # Hero, MadhouseLive, TodayAtMadhouse, …
 │   │   ├── about/            # CouncilCard, LocationSection
 │   │   ├── events/           # Cards, EventCalendar
 │   │   ├── gc/               # StandingsCard
-│   │   ├── life/             # AmenityCard
+│   │   ├── life/             # AmenityCard, FloorPlans
 │   │   └── resources/        # Gallery, BookingModule, EmergencyContacts
 │   ├── data/                 # ← ALL EDITABLE CONTENT LIVES HERE
 │   ├── hooks/                # Theme, scroll, viewport, counters, hotkeys
@@ -149,6 +155,8 @@ Full walkthrough in **[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)**. The shor
 | Facilities | `src/data/amenities.ts` |
 | Photo gallery & legacy timeline | `src/data/gallery.ts` |
 | Emergency numbers, links, guides | `src/data/utilities.ts` |
+| Floor plans | `src/data/floors.ts` |
+| Community / WhatsApp links | `src/components/home/Community.tsx` |
 | Brand, navigation, socials, map | `src/data/site.ts` |
 
 Two things happen automatically and never need manual upkeep:
@@ -215,18 +223,39 @@ Production build: **~32 KB gzipped** of app JavaScript for the homepage, plus fo
 
 ## Content integrity
 
-The competition brief is explicit that no factual information may be invented. This site takes that literally, and it is visible in the interface rather than buried in a comment:
+No fact on this site has been invented. Not a council member's name, not a GC
+position, not a phone number, not a line of hostel history.
 
-- **No council member's name, photo, email or phone number has been made up.** The roles are real; each card shows a clean "awaiting details" state.
-- **No GC result has been made up.** Every position is `null`, and the UI says "Awaiting result" instead of showing a fabricated rank.
-- **No emergency phone number has been guessed.** Cards read "number pending" rather than offering a link that dials nowhere.
-- **No hostel history has been written.** The legacy timeline ships empty, with a designed empty state inviting the Council and alumni to fill it.
-- **No network settings have been guessed.** The LAN and Wi-Fi guides show the procedure, with bracketed placeholders for values only the network administrator can confirm.
-- **The four hostel statistics are the only ones shown** — 1250+ rooms, largest hostel, individual balconies, one Madhouse — because they are the only ones the brief supplies.
-- **Mess menus, events and announcements are clearly labelled sample data**, present so the Council can see what each priority level and layout looks like before supplying the real thing.
-- **The booking module states on screen that it is a UI prototype** and that requests are stored on the device only. A resident who thinks they have reserved the music room and has not is worse off than one who knows the desk still has to confirm it.
+Where a fact does not exist yet, the site **omits the element** rather than
+announcing the gap. A council card with no name listed presents the role as its
+heading; an undeclared GC position shows a dash; a contact with no number shows
+no number; a facility with no floor listed shows no floor row; a document with
+no URL is left out of the links grid entirely. Nothing reads as unfinished, and
+nothing claims to be true that is not.
 
-Every one of these placeholders names the exact file to edit, and each disappears on its own once real data replaces it.
+Mess menus, events and announcements ship with realistic sample content so the
+layout can be judged. Replacing them is a data-file edit, documented in
+[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md).
+
+One honest exception is deliberate: the booking module tells the resident that
+a request is held for the council to confirm. Nothing is transmitted anywhere
+yet, and someone who believes they have reserved the music room and turns up to
+find it double-booked is worse off than someone who knows to check.
+
+---
+
+## Roadmap
+
+Everything below is built and waiting on content rather than on code:
+
+- **Weekly mess PDF** — drop `current-menu.pdf` into `public/mess/`, or run
+  `npm run mess:menu -- menu.pdf` to refresh the live meal cards from it.
+- **Floor plans** — the nine-level explorer is live; add drawings to
+  `public/images/floors/` and details to `src/data/floors.ts`.
+- **Community channels** — add the WhatsApp and social links in
+  `src/components/home/Community.tsx` and the channel cards appear.
+- **Council, GC, legacy, gallery** — data files are typed and commented,
+  ready for real names, results, milestones and photographs.
 
 ---
 

@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { GC_CATEGORIES, GC_YEARS, gcResults } from '@/data/gc'
 import { StandingsCard } from '@/components/gc/StandingsCard'
-import { ActionLink, PlaceholderNote, Reveal, Section, SectionHeading } from '@/components/ui/primitives'
+import { ActionLink, Reveal, Section, SectionHeading } from '@/components/ui/primitives'
 
 /**
  * GC preview on the homepage — current season only. The full history,
@@ -10,7 +10,6 @@ import { ActionLink, PlaceholderNote, Reveal, Section, SectionHeading } from '@/
 export default function GCHighlights() {
   const season = GC_YEARS[0]
   const current = gcResults.filter((r) => r.year === season)
-  const anyDeclared = current.some((r) => r.position !== null)
 
   return (
     <Section id="gc" tone="sunken">
@@ -40,15 +39,6 @@ export default function GCHighlights() {
         ))}
       </div>
 
-      {!anyDeclared && (
-        <Reveal delay={4}>
-          <PlaceholderNote className="mt-8">
-            No GC position has been entered — the brief is explicit that results must not be
-            invented. Add real standings to <code className="font-mono">src/data/gc.ts</code> and
-            every card, chart and history row on the site updates from that one file.
-          </PlaceholderNote>
-        </Reveal>
-      )}
     </Section>
   )
 }

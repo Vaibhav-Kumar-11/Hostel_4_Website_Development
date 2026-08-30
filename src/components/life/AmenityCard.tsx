@@ -1,4 +1,4 @@
-import { Clock, ImageOff, MapPin } from 'lucide-react'
+import { Clock, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Amenity } from '@/types/content'
 import { asset, cn } from '@/lib/utils'
@@ -7,9 +7,8 @@ import { asset, cn } from '@/lib/utils'
  * A hostel facility.
  *
  * Where a real photograph exists it fills the card. Where one does not, the
- * card falls back to a typographic panel rather than borrowing stock imagery —
- * the brief rules that out, and a placeholder that looks deliberate reads
- * better than a generic gym photo that is not this gym.
+ * card falls back to a typographic panel rather than borrowing stock imagery.
+ * A generic gym photo that is not this gym would be worse than no photo.
  */
 export function AmenityCard({
   amenity,
@@ -75,27 +74,27 @@ export function AmenityCard({
           {amenity.tagline}
         </p>
 
-        {/* Detail strip reveals on hover / focus on pointer devices. */}
-        <div
-          className={cn(
-            'mt-4 flex flex-wrap gap-x-5 gap-y-1.5 font-mono text-[10px] uppercase tracking-wider',
-            amenity.photo ? 'text-ink-300' : 'muted',
-          )}
-        >
-          <span className="flex items-center gap-1.5">
-            <MapPin size={11} />
-            {amenity.location ?? 'Location to be confirmed'}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Clock size={11} />
-            {amenity.timings ?? 'Timings to be confirmed'}
-          </span>
-        </div>
-
-        {!amenity.photo && (
-          <span className="muted mt-4 flex items-center gap-1.5 text-[10px] uppercase tracking-wider">
-            <ImageOff size={11} /> Photograph pending
-          </span>
+        {/* Only rows that actually carry a value are rendered. */}
+        {(amenity.location || amenity.timings) && (
+          <div
+            className={cn(
+              'mt-4 flex flex-wrap gap-x-5 gap-y-1.5 font-mono text-[10px] uppercase tracking-wider',
+              amenity.photo ? 'text-ink-300' : 'muted',
+            )}
+          >
+            {amenity.location && (
+              <span className="flex items-center gap-1.5">
+                <MapPin size={11} />
+                {amenity.location}
+              </span>
+            )}
+            {amenity.timings && (
+              <span className="flex items-center gap-1.5">
+                <Clock size={11} />
+                {amenity.timings}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </article>

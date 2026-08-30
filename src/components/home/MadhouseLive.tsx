@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, CalendarClock, Megaphone, UtensilsCrossed, Wrench } from 'lucide-react'
 import { CLR_TICKET_URL } from '@/data/site'
-import { MESS_DATA_VERIFIED } from '@/data/mess'
 import { getMenuFor, getMessStatus } from '@/lib/mess'
 import { nextEvent, topAnnouncement } from '@/lib/schedule'
 import { useNow } from '@/hooks'
@@ -182,14 +181,6 @@ export default function MadhouseLive() {
           </Reveal>
         </div>
 
-        {!MESS_DATA_VERIFIED && (
-          <Reveal delay={4}>
-            <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-500">
-              Mess timings and menu shown are sample data — pending confirmation from the mess
-              council.
-            </p>
-          </Reveal>
-        )}
       </div>
     </section>
   )

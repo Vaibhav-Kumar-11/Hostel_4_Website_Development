@@ -79,7 +79,7 @@ export default function WhatsHappening() {
           ) : (
             <EmptyState
               title="Calendar is clear"
-              description="No events scheduled right now. Add one in src/data/events.ts and it appears here automatically."
+              description="Nothing on the calendar right now. Check back soon."
             />
           )}
         </div>

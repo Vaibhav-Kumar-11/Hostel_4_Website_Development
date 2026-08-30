@@ -1,10 +1,11 @@
 import PageHeader from '@/components/ui/PageHeader'
 import { AmenityCard } from '@/components/life/AmenityCard'
-import { PlaceholderNote, Reveal, Section, SectionHeading } from '@/components/ui/primitives'
+import FloorPlans from '@/components/life/FloorPlans'
+import { Reveal, Section, SectionHeading } from '@/components/ui/primitives'
 import { amenities } from '@/data/amenities'
 import { media, site } from '@/data/site'
 import { usePageMeta } from '@/lib/meta'
-import { asset } from '@/lib/utils'
+import { asset, cn } from '@/lib/utils'
 
 /**
  * LIFE — the facilities, then the day they add up to.
@@ -51,8 +52,6 @@ export default function Life() {
       'Inside Hostel 4, IIT Bombay — the reading room, gym, indoor sports room, music and dance rooms, common room and everything in between.',
   })
 
-  const missingPhotos = amenities.filter((a) => !a.photo)
-
   return (
     <>
       <PageHeader
@@ -68,30 +67,30 @@ export default function Life() {
         <SectionHeading
           eyebrow="Facilities"
           title="The spaces"
-          description="Every photograph below was taken inside Hostel 4. Where a facility has no photograph yet, the card says so rather than borrowing a stock image."
+          description="Every photograph below was taken inside Hostel 4."
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/*
+          Eight facilities. The lead card spans two columns at lg, which makes
+          nine grid cells across three columns — three full rows with no ragged
+          gap at the end. `auto-rows-fr` keeps every card in a row the same
+          height so the block reads as a solid grid.
+        */}
+        <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {amenities.map((a, i) => (
-            <Reveal key={a.id} delay={i}>
+            <Reveal
+              key={a.id}
+              delay={i}
+              className={cn('h-full', i === 0 && 'lg:col-span-2')}
+            >
               <AmenityCard amenity={a} featured={i === 0} />
             </Reveal>
           ))}
         </div>
 
-        {missingPhotos.length > 0 && (
-          <Reveal delay={4}>
-            <PlaceholderNote className="mt-8">
-              {missingPhotos.length} of {amenities.length} facilities are waiting on photographs
-              ({missingPhotos.map((a) => a.name).join(', ')}). Drop images into{' '}
-              <code className="font-mono">/public/images/hostel/</code> and point the{' '}
-              <code className="font-mono">photo</code> field at them in{' '}
-              <code className="font-mono">src/data/amenities.ts</code>. Floors and timings live in
-              the same file.
-            </PlaceholderNote>
-          </Reveal>
-        )}
       </Section>
+
+      <FloorPlans />
 
       {/* ── A day in Madhouse ── */}
       <Section tone="dark" size="lg">

@@ -4,7 +4,7 @@ import { CalendarDays, Megaphone, Search } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
 import { AnnouncementCard, EventCard } from '@/components/events/Cards'
 import EventCalendar from '@/components/events/EventCalendar'
-import { EmptyState, PlaceholderNote, Reveal, Section } from '@/components/ui/primitives'
+import { EmptyState, Reveal, Section } from '@/components/ui/primitives'
 import { allAnnouncements, pastEvents, upcomingEvents } from '@/lib/schedule'
 import type { EventCategory } from '@/types/content'
 import { site } from '@/data/site'
@@ -204,7 +204,7 @@ export default function Events() {
               <EmptyState
                 icon={<CalendarDays size={22} />}
                 title="Archive is empty"
-                description="Past events appear here automatically the day after they happen — nothing has to be moved by hand."
+                description="Events move here once they have happened."
               />
             )}
           </Section>
@@ -231,14 +231,6 @@ export default function Events() {
             />
           )}
 
-          <Reveal delay={3}>
-            <PlaceholderNote className="mt-8">
-              Sample notices, shown so each priority level is visible. Replace them in{' '}
-              <code className="font-mono">src/data/announcements.ts</code> — set{' '}
-              <code className="font-mono">pinned</code> to keep one at the top, and{' '}
-              <code className="font-mono">expiresOn</code> to retire it automatically.
-            </PlaceholderNote>
-          </Reveal>
         </Section>
       )}
     </>

@@ -1,6 +1,6 @@
 import { Phone, ShieldAlert } from 'lucide-react'
 import { emergencyContacts } from '@/data/utilities'
-import { PlaceholderNote, Reveal } from '@/components/ui/primitives'
+import { Reveal } from '@/components/ui/primitives'
 import { cn } from '@/lib/utils'
 
 /**
@@ -10,13 +10,11 @@ import { cn } from '@/lib/utils'
  * quick-access strip, in Resources and in the footer, which is where someone
  * in a hurry will actually look.
  *
- * Every number is `null` until the Council supplies it. A card with a real
- * number becomes a one-tap `tel:` link; a card without one says so plainly
- * instead of offering a link that dials nowhere.
+ * A card with a number becomes a one-tap `tel:` link. A card without one
+ * shows the contact and its description without a dead link attached.
  */
 export default function EmergencyContacts({ compact = false }: { compact?: boolean }) {
   const list = compact ? emergencyContacts.filter((c) => c.critical) : emergencyContacts
-  const anyNumber = emergencyContacts.some((c) => c.phone)
 
   return (
     <div>
@@ -33,7 +31,6 @@ export default function EmergencyContacts({ compact = false }: { compact?: boole
                   'card flex h-full items-center gap-4 p-4',
                   dial && 'card-hover cursor-pointer',
                   contact.critical && 'border-l-[3px] border-l-red-500',
-                  !dial && 'border-dashed opacity-90',
                 )}
               >
                 <span
@@ -56,37 +53,22 @@ export default function EmergencyContacts({ compact = false }: { compact?: boole
                   )}
                 </span>
 
-                <span className="shrink-0 text-right">
-                  {dial ? (
-                    <>
-                      <span className="block font-mono text-sm font-semibold text-madhouse-500">
-                        {contact.phone}
-                      </span>
-                      <span className="muted block font-mono text-[9px] uppercase tracking-wider sm:hidden">
-                        Tap to call
-                      </span>
-                    </>
-                  ) : (
-                    <span className="muted font-mono text-[9px] uppercase tracking-[0.14em]">
-                      Number
-                      <br />
-                      pending
+                {dial && (
+                  <span className="shrink-0 text-right">
+                    <span className="block font-mono text-sm font-semibold text-madhouse-500">
+                      {contact.phone}
                     </span>
-                  )}
-                </span>
+                    <span className="muted block font-mono text-[9px] uppercase tracking-wider sm:hidden">
+                      Tap to call
+                    </span>
+                  </span>
+                )}
               </Element>
             </Reveal>
           )
         })}
       </div>
 
-      {!anyNumber && (
-        <PlaceholderNote className="mt-5">
-          No emergency number has been guessed. Fill in the <code className="font-mono">phone</code>{' '}
-          fields in <code className="font-mono">src/data/utilities.ts</code> — each card then turns
-          into a one-tap dial link on mobile, here, on the homepage and in the footer.
-        </PlaceholderNote>
-      )}
     </div>
   )
 }

@@ -7,6 +7,7 @@ import GCHighlights from '@/components/home/GCHighlights'
 import LifeTeaser from '@/components/home/LifeTeaser'
 import PhotoHighlights from '@/components/home/PhotoHighlights'
 import QuickUtility from '@/components/home/QuickUtility'
+import Community from '@/components/home/Community'
 import LocationSection from '@/components/about/LocationSection'
 import { usePageMeta } from '@/lib/meta'
 import { site } from '@/data/site'
@@ -33,6 +34,7 @@ export default function Home() {
       <LifeTeaser />
       <PhotoHighlights />
       <QuickUtility />
+      <Community />
       <LocationSection />
     </>
   )

@@ -48,12 +48,6 @@ export default function ByTheNumbers() {
           ))}
         </div>
 
-        <Reveal delay={5}>
-          <p className="mt-16 max-w-xl text-sm leading-relaxed text-ink-400">
-            These are the only figures the hostel has published. Nothing on this page is estimated
-            or filled in for effect.
-          </p>
-        </Reveal>
       </div>
     </section>
   )

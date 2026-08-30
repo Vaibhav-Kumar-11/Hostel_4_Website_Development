@@ -1,10 +1,8 @@
-import { History, Users } from 'lucide-react'
+import { History } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
 import { CouncilCard } from '@/components/about/CouncilCard'
 import LocationSection from '@/components/about/LocationSection'
-import {
-  EmptyState, PlaceholderNote, Reveal, Section, SectionHeading, Stat,
-} from '@/components/ui/primitives'
+import { Reveal, Section, SectionHeading, Stat } from '@/components/ui/primitives'
 import { council } from '@/data/council'
 import { legacy } from '@/data/gallery'
 import { hostelFacts } from '@/data/utilities'
@@ -26,7 +24,6 @@ export default function About() {
 
   const administration = council.filter((m) => m.group === 'Administration')
   const secretaries = council.filter((m) => m.group === 'Council')
-  const namesPending = council.every((m) => !m.name)
 
   return (
     <>
@@ -94,7 +91,7 @@ export default function About() {
         <SectionHeading
           eyebrow="Hostel facts"
           title="The verified numbers"
-          description="Only what the hostel has actually published. Nothing here is rounded up for effect."
+          description="The numbers that make Madhouse what it is."
         />
         <div className="grid gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {hostelFacts.map((fact, i) => (
@@ -143,17 +140,6 @@ export default function About() {
           ))}
         </div>
 
-        {namesPending && (
-          <Reveal delay={4}>
-            <PlaceholderNote className="mt-8">
-              Roles are real; no name, photo, email or phone number has been invented. Fill in{' '}
-              <code className="font-mono">src/data/council.ts</code> — set{' '}
-              <code className="font-mono">name</code>, drop a portrait into{' '}
-              <code className="font-mono">/public/images/council/</code>, and each card switches out
-              of its placeholder state on its own.
-            </PlaceholderNote>
-          </Reveal>
-        )}
       </Section>
 
       {/* ── Legacy ── */}
@@ -163,8 +149,7 @@ export default function About() {
           title={<span className="text-ink-50">The legacy of Madhouse</span>}
           description={
             <span className="text-ink-300">
-              GC banners, traditions, the years that residents still bring up. This timeline is
-              built to be filled by the people who were there.
+              GC banners, traditions, and the years residents still bring up.
             </span>
           }
         />
@@ -176,15 +161,12 @@ export default function About() {
                 <History size={22} />
               </span>
               <h3 className="mt-6 text-2xl font-bold uppercase tracking-tight text-ink-50">
-                This timeline is waiting for you
+                Every hostel has a memory
               </h3>
               <p className="muted mx-auto mt-4 max-w-lg text-sm leading-relaxed text-ink-300">
-                No hostel history has been written here, because none of it should be guessed. Every
-                milestone, GC victory and old photograph on this page will come from the Council and
-                from alumni who remember it first-hand.
-              </p>
-              <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-500">
-                Add entries to src/data/gallery.ts → legacy[]
+                The wins, the traditions and the nights that people still talk about years later.
+                If you were there for one of them, the Council would like to hear about it — this
+                is where it goes.
               </p>
             </div>
           </Reveal>
@@ -216,17 +198,6 @@ export default function About() {
             ))}
           </ol>
         )}
-      </Section>
-
-      {/* ── Contribute ── */}
-      <Section size="sm" tone="sunken">
-        <Reveal>
-          <EmptyState
-            icon={<Users size={22} />}
-            title="Have something for this page?"
-            description="Old photographs, a milestone worth recording, a correction to a council listing — send it to the Web Representative and it goes straight into the site."
-          />
-        </Reveal>
       </Section>
 
       <LocationSection />

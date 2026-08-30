@@ -6,10 +6,10 @@ import { cn, ordinal } from '@/lib/utils'
 /**
  * A single General Championship result.
  *
- * `position: null` is a first-class state, not an error — the card says
- * "awaiting result" rather than inventing a rank. When a real position is
- * entered, the bar fills proportionally to the field size (GC_TEAMS) and the
- * top three pick up podium colouring.
+ * `position: null` is a first-class state, not an error. An undeclared result
+ * shows a dash and no caption rather than a fabricated rank. Once a real
+ * position is entered the bar fills proportionally to the field size
+ * (GC_TEAMS) and the top three pick up podium colouring.
  */
 
 const podium: Record<number, string> = {
@@ -67,15 +67,11 @@ export function StandingsCard({
             style={{ width: `${fill}%` }}
           />
         </div>
-        <p className="muted mt-2.5 font-mono text-[10px] uppercase tracking-[0.14em]">
-          {position ? (
-            <>
-              {ordinal(position)} of {GC_TEAMS} hostels
-            </>
-          ) : (
-            'Result awaiting declaration'
-          )}
-        </p>
+        {position && (
+          <p className="muted mt-2.5 font-mono text-[10px] uppercase tracking-[0.14em]">
+            {ordinal(position)} of {GC_TEAMS} hostels
+          </p>
+        )}
       </div>
 
       {result?.note && <p className="muted mt-3 text-xs italic">{result.note}</p>}

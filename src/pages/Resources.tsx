@@ -4,7 +4,7 @@ import PageHeader from '@/components/ui/PageHeader'
 import Gallery from '@/components/resources/Gallery'
 import BookingModule from '@/components/resources/BookingModule'
 import EmergencyContacts from '@/components/resources/EmergencyContacts'
-import { PlaceholderNote, Reveal, Section, SectionHeading } from '@/components/ui/primitives'
+import { Reveal, Section, SectionHeading } from '@/components/ui/primitives'
 import { guides, resourceLinks } from '@/data/utilities'
 import { photos } from '@/data/gallery'
 import { media, site } from '@/data/site'
@@ -64,14 +64,6 @@ export default function Resources() {
         />
         <Gallery />
 
-        <Reveal delay={2}>
-          <PlaceholderNote className="mt-8">
-            Five hostel photographs are live. To grow the roll, drop files into{' '}
-            <code className="font-mono">/public/images/gallery/</code> and add an entry to{' '}
-            <code className="font-mono">src/data/gallery.ts</code> — the category filters build
-            themselves from whatever categories you use.
-          </PlaceholderNote>
-        </Reveal>
       </Section>
 
       {/* ── Bookings ── */}
@@ -99,13 +91,6 @@ export default function Resources() {
           ))}
         </div>
 
-        <Reveal delay={3}>
-          <PlaceholderNote className="mt-8">
-            Bracketed values in the network guides are placeholders — no IP range, gateway or SSID
-            has been guessed. Replace them in <code className="font-mono">src/data/utilities.ts</code>{' '}
-            once the hostel network administrator confirms the real settings.
-          </PlaceholderNote>
-        </Reveal>
       </Section>
 
       {/* ── Links ── */}
@@ -115,20 +100,17 @@ export default function Resources() {
           title="Important links"
           description="Institute portals, hostel documents and everything worth having one tap away."
         />
+        {/* A link without a destination yet is left out rather than shown dead. */}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {resourceLinks.map((link, i) => {
-            const pending = link.href === '#'
-            const Element = pending ? 'div' : 'a'
-            return (
+          {resourceLinks
+            .filter((link) => link.href && link.href !== '#')
+            .map((link, i) => (
               <Reveal key={link.id} delay={i}>
-                <Element
-                  {...(pending
-                    ? {}
-                    : { href: link.href, target: '_blank', rel: 'noreferrer noopener' })}
-                  className={cn(
-                    'card flex h-full items-center gap-4 p-5',
-                    pending ? 'border-dashed opacity-85' : 'card-hover group',
-                  )}
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="card card-hover group flex h-full items-center gap-4 p-5"
                 >
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[rgb(var(--surface-sunken))] text-madhouse-500">
                     <Link2 size={16} />
@@ -139,20 +121,13 @@ export default function Resources() {
                       <span className="muted mt-0.5 block text-xs">{link.description}</span>
                     )}
                   </span>
-                  {pending ? (
-                    <span className="muted shrink-0 font-mono text-[9px] uppercase tracking-wider">
-                      Pending
-                    </span>
-                  ) : (
-                    <ExternalLink
-                      size={14}
-                      className="muted shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    />
-                  )}
-                </Element>
+                  <ExternalLink
+                    size={14}
+                    className="muted shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </a>
               </Reveal>
-            )
-          })}
+            ))}
         </div>
       </Section>
 
@@ -165,7 +140,7 @@ export default function Resources() {
               Emergency <span className="text-madhouse-500">contacts</span>
             </>
           }
-          description="On a phone, every card below becomes a one-tap call as soon as the Council supplies the number."
+          description="On a phone, tap a number to call it."
         />
         <EmergencyContacts />
       </Section>

@@ -103,6 +103,15 @@ export function useInView<T extends HTMLElement>(
   useEffect(() => {
     const node = ref.current
     if (!node || inView) return
+
+    // Without an observer the element counts as seen straight away. This hook
+    // gates the statistics counters, and a counter that never activates shows
+    // 0 — a wrong number is worse than an unanimated one.
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true)
+      return
+    }
+
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setInView(true)
@@ -110,7 +119,34 @@ export function useInView<T extends HTMLElement>(
       }
     }, options)
     observer.observe(node)
-    return () => observer.disconnect()
+
+    /*
+      Geometry backstop, matching the one behind <Reveal>. A tab that loads
+      while hidden runs no layout passes and the observer can stay silent even
+      after it is brought forward, so check directly on scroll, on visibility
+      change, and once shortly after mount.
+    */
+    const check = () => {
+      const r = node.getBoundingClientRect()
+      const h = window.innerHeight || document.documentElement.clientHeight
+      if (r.top < h && r.bottom > 0) {
+        setInView(true)
+        observer.disconnect()
+      }
+    }
+    const onVisible = () => {
+      if (!document.hidden) check()
+    }
+    const timer = window.setTimeout(check, 1200)
+    window.addEventListener('scroll', check, { passive: true })
+    document.addEventListener('visibilitychange', onVisible)
+
+    return () => {
+      observer.disconnect()
+      window.clearTimeout(timer)
+      window.removeEventListener('scroll', check)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView])
 

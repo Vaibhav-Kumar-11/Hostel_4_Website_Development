@@ -27,27 +27,13 @@ export const emergencyContacts: EmergencyContact[] = [
  */
 export const resourceLinks: ResourceLink[] = [
   ...instituteLinks.map((l) => ({ ...l, external: true, state: 'verified' as const })),
-  {
-    id: 'r-rules',
-    label: 'Hostel Rules & Code of Conduct',
-    href: '#',
-    description: 'Document pending from the Hostel Council',
-    state: 'placeholder',
-  },
-  {
-    id: 'r-mess-rules',
-    label: 'Mess Rules & Rebate Policy',
-    href: '#',
-    description: 'Document pending from the Mess Council',
-    state: 'placeholder',
-  },
-  {
-    id: 'r-room-alloc',
-    label: 'Room Allotment Information',
-    href: '#',
-    description: 'Document pending from the Hostel Office',
-    state: 'placeholder',
-  },
+  /*
+    Hostel documents. Each one is hidden from the page until it has a real
+    destination, so add the URL and it appears; leave it and nothing shows.
+      { id: 'r-rules', label: 'Hostel Rules & Code of Conduct', href: 'https://…' },
+      { id: 'r-mess-rules', label: 'Mess Rules & Rebate Policy', href: 'https://…' },
+      { id: 'r-room-alloc', label: 'Room Allotment Information', href: 'https://…' },
+  */
 ]
 
 /**
@@ -60,19 +46,25 @@ export const guides: Guide[] = [
   {
     id: 'g-lan',
     title: 'LAN / Wired Internet Setup',
-    summary:
-      'Getting the ethernet port in your room online. Bracketed values come from the hostel network administrator.',
+    summary: 'Getting the ethernet port in your room online.',
     steps: [
-      { label: 'Connect', value: 'Plug the ethernet cable into the wall port and your laptop.' },
-      { label: 'IP assignment', value: '[ Static or DHCP — confirm with the hostel network admin ]' },
-      { label: 'IP address', value: '[ Assigned per room / per port ]' },
-      { label: 'Subnet mask', value: '[ To be confirmed ]' },
-      { label: 'Default gateway', value: '[ To be confirmed ]' },
-      { label: 'DNS servers', value: '[ To be confirmed ]' },
-      { label: 'Authenticate', value: 'Open internet.iitb.ac.in and sign in with your LDAP credentials.' },
+      { label: 'Connect', value: 'Plug the ethernet cable into the wall port and into your laptop.' },
+      {
+        label: 'Addressing',
+        value:
+          'Whether your wing runs on DHCP or fixed addresses — and the address, subnet mask and gateway if it is fixed — comes from the hostel network coordinator.',
+      },
+      {
+        label: 'Authenticate',
+        value: 'Open internet.iitb.ac.in and sign in with your LDAP credentials.',
+      },
+      {
+        label: 'Register the device',
+        value: 'A laptop the network has not seen before may need its MAC address registered once.',
+      },
     ],
     footnote:
-      'If the port stays dead after this, raise a LAN ticket from the Maintenance page — include your room number and the port label.',
+      'If the port stays dead after all that, raise a LAN ticket from the Maintenance page. Include your room number and the port label.',
     state: 'placeholder',
   },
   {
@@ -80,11 +72,16 @@ export const guides: Guide[] = [
     title: 'Campus Wi-Fi',
     summary: 'Connecting to the institute wireless network from your phone or laptop.',
     steps: [
-      { label: 'Network name', value: '[ SSID — confirm with the network admin ]' },
-      { label: 'Security', value: '[ WPA2-Enterprise / captive portal — to be confirmed ]' },
-      { label: 'Username', value: 'Your LDAP ID' },
-      { label: 'Password', value: 'Your LDAP password' },
-      { label: 'Sign in', value: 'Visit internet.iitb.ac.in if the captive portal does not open on its own.' },
+      { label: 'Username', value: 'Your LDAP ID.' },
+      { label: 'Password', value: 'Your LDAP password.' },
+      {
+        label: 'Sign in',
+        value: 'Visit internet.iitb.ac.in if the login page does not open on its own.',
+      },
+      {
+        label: 'Not connecting',
+        value: 'The hostel network coordinator can re-register a device that refuses to authenticate.',
+      },
     ],
     state: 'placeholder',
   },

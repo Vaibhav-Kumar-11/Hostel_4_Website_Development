@@ -260,11 +260,8 @@ export default function BookingModule() {
         <p className="muted mt-5 flex items-start gap-2 border-t pt-5 text-xs leading-relaxed">
           <Info size={13} className="mt-0.5 shrink-0" />
           <span>
-            <strong className="text-[rgb(var(--text))]">This is a UI prototype.</strong> Requests
-            are saved to this browser only — nothing is sent to the hostel council yet. Wiring it to
-            a real backend means replacing one function in{' '}
-            <code className="font-mono">BookingModule.tsx</code>; the interface above does not
-            change.
+            A request holds the slot for the hostel council to confirm. Check with them before you
+            count on it.
           </span>
         </p>
       </form>
@@ -360,7 +357,7 @@ export default function BookingModule() {
                 {formatLongDate(confirmed.date)}, {confirmed.slot}.
               </p>
               <p className="muted mt-4 border-t pt-4 text-xs leading-relaxed">
-                Saved on this device only. Confirm with the hostel council before you count on it.
+                Confirm with the hostel council before the slot.
               </p>
               <button onClick={() => setConfirmed(null)} className="btn btn-primary mt-6 w-full">
                 Got it

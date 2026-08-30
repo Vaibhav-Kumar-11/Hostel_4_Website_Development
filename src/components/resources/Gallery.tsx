@@ -45,10 +45,9 @@ export default function Gallery({ limit, showFilters = true }: { limit?: number;
     return (
       <div className="card flex flex-col items-center gap-3 px-6 py-20 text-center">
         <ImageOff className="muted" size={26} />
-        <h3 className="text-lg font-bold uppercase">The photo roll is empty</h3>
+        <h3 className="text-lg font-bold uppercase">Nothing here yet</h3>
         <p className="muted max-w-sm text-sm">
-          Drop images into <code className="font-mono">/public/images/gallery</code> and list them in{' '}
-          <code className="font-mono">src/data/gallery.ts</code>.
+          GC nights, festivals and the ordinary days in between will show up here.
         </p>
       </div>
     )
@@ -75,17 +74,24 @@ export default function Gallery({ limit, showFilters = true }: { limit?: number;
         </div>
       )}
 
-      {/* Masonry via CSS columns — no JS layout pass, no reflow jank. */}
+      {/*
+        Masonry via CSS columns — no JS layout pass, no reflow jank.
+
+        Tile entrances use the CSS `anim-rise` class rather than a
+        framer-motion opacity animation. These tiles are the gallery's actual
+        content, and a JS-driven fade leaves them invisible whenever the
+        browser stops issuing animation frames. `layout` stays on framer
+        because it only smooths reflow when a filter changes — if it never
+        runs the tiles simply snap into place, which is harmless.
+      */}
       <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
         {visible.map((photo, i) => (
           <motion.button
             key={photo.id}
             layout
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: Math.min(i, 8) * 0.04, ease: [0.16, 1, 0.3, 1] }}
             onClick={() => setOpenIndex(i)}
-            className="group relative block w-full break-inside-avoid overflow-hidden rounded-xl border text-left"
+            style={{ ['--d' as string]: `${Math.min(i, 8) * 0.04}s` }}
+            className="anim-rise group relative block w-full break-inside-avoid overflow-hidden rounded-xl border text-left"
             aria-label={`Open photo: ${photo.caption}`}
           >
             <img

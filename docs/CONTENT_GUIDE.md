@@ -85,6 +85,60 @@ The homepage recalculates everything from these times — you do not have to tou
 
 Add or remove items freely — the cards resize themselves.
 
+### Updating the mess menu from the weekly PDF
+
+The mess council publishes a menu PDF every week. There are two separate things you can do with it, and doing one does not oblige you to do the other.
+
+#### A. Publish the PDF itself
+
+This gives residents a "This week's menu (PDF)" link to the original document.
+
+1. Rename the file to exactly **`current-menu.pdf`**.
+2. Put it in **`public/mess/`**, replacing last week's.
+3. Open `src/components/home/MessMenuLink.tsx` and set:
+
+```ts
+export const MESS_PDF_AVAILABLE: boolean = true
+```
+
+That is the whole job. While the flag is `false` the link is not rendered at all — because the site is static, nothing can check at runtime whether the file is really there, so the link stays switched off rather than risking a dead download. Once it is `true`, dropping in a new `current-menu.pdf` each week is all that is needed; you never touch the flag again.
+
+Keep the file under about 2 MB. If the council sends a photograph of a printed sheet, ask for the PDF — a phone photo renamed to `.pdf` is not a PDF.
+
+#### B. Refresh the meal cards from the PDF
+
+The homepage meal cards and the week table read `weeklyMenu`, not the PDF. To update them without retyping seven days of food:
+
+```bash
+npm run mess:menu -- path/to/menu.pdf
+```
+
+That **only prints**. It shows you the full seven-day grid it has read, marking each meal either `parsed` (taken from your file) or `kept` (left exactly as it is now), followed by a list of every slot it could not fill and the reason.
+
+**Read that preview against the actual PDF before going further.** A PDF does not know it contains a table — it stores letters at coordinates, and the importer reconstructs the columns from those coordinates. That works well for an ordinary grid, but merged cells, an extra column of dates, or a two-line dish name can land text in the wrong meal. This is a real limit of reading PDFs, not a bug you can report away. The importer will refuse a cell it is unsure of and leave the old value in place, but it cannot catch a wrong answer that looks plausible. That is your job, and it takes about a minute.
+
+When the preview is right:
+
+```bash
+npm run mess:menu -- path/to/menu.pdf --write
+```
+
+Only the `weeklyMenu` array is rewritten. Your timings, the comments and `MESS_DATA_VERIFIED` are untouched. Check the result with `git diff src/data/mess.ts`, then `npm run dev`.
+
+#### If the PDF will not parse
+
+Some menus cannot be read this way at all — a scan or a photograph has no text in it, and some layouts are simply too far from a grid. The importer says so plainly instead of guessing.
+
+In that case, type the menu into a spreadsheet with five columns — day, breakfast, lunch, snacks, dinner, items separated by commas — export it as **Tab-separated values (`.tsv`)**, and feed that in instead:
+
+```bash
+npm run mess:menu -- menu.tsv --write
+```
+
+Nothing is inferred on this route: what you type is what appears on the site. Leave a cell empty to keep whatever that meal already has. Full format notes are in **[`scripts/README.md`](../scripts/README.md)**.
+
+Editing `weeklyMenu` by hand, as described just above, remains perfectly fine for a one-dish correction.
+
 ### Turn off the "sample menu" notice
 
 Once the menu and timings are real:

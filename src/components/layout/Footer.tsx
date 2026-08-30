@@ -3,7 +3,6 @@ import type { LucideIcon } from 'lucide-react'
 import { Facebook, Instagram, Linkedin, MapPin, Youtube } from 'lucide-react'
 import { instituteLinks, navigation, site, socials } from '@/data/site'
 import { emergencyContacts } from '@/data/utilities'
-import { cn } from '@/lib/utils'
 
 const socialIcons: Record<string, LucideIcon> = {
   instagram: Instagram,
@@ -40,30 +39,25 @@ export default function Footer() {
             </p>
 
             <div className="mt-6 flex gap-2">
-              {socials.map((s) => {
-                const Icon = socialIcons[s.id]
-                const disabled = !s.href
-                return (
-                  <a
-                    key={s.id}
-                    href={s.href ?? undefined}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label={disabled ? `${s.label} — link pending` : s.label}
-                    aria-disabled={disabled}
-                    title={disabled ? `${s.label} handle pending from the Council` : s.label}
-                    onClick={(e) => disabled && e.preventDefault()}
-                    className={cn(
-                      'grid h-10 w-10 place-items-center rounded-full border border-white/12 transition-all duration-200',
-                      disabled
-                        ? 'cursor-not-allowed text-ink-500 opacity-45'
-                        : 'text-ink-200 hover:-translate-y-0.5 hover:border-madhouse-500 hover:text-madhouse-500',
-                    )}
-                  >
-                    {Icon && <Icon size={16} />}
-                  </a>
-                )
-              })}
+              {/* A handle the Council has not supplied is left out rather than
+                  shown greyed out. */}
+              {socials
+                .filter((s) => s.href)
+                .map((s) => {
+                  const Icon = socialIcons[s.id]
+                  return (
+                    <a
+                      key={s.id}
+                      href={s.href!}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      aria-label={s.label}
+                      className="grid h-10 w-10 place-items-center rounded-full border border-white/12 text-ink-200 transition-all duration-200 hover:-translate-y-0.5 hover:border-madhouse-500 hover:text-madhouse-500"
+                    >
+                      {Icon && <Icon size={16} />}
+                    </a>
+                  )
+                })}
             </div>
           </div>
 
@@ -123,11 +117,7 @@ export default function Footer() {
                     >
                       {c.phone}
                     </a>
-                  ) : (
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-ink-500">
-                      pending
-                    </span>
-                  )}
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -147,9 +137,7 @@ export default function Footer() {
 
         <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-7 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-ink-300">
-            Built with <span className="text-madhouse-500">♥</span> by{' '}
-            <span className="font-semibold text-ink-100">{site.builtBy}</span> in collaboration with
-            the Hostel 4 Council.
+            Built with <span className="text-madhouse-500">♥</span>
           </p>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-500">
             Made for the Madhouse community.

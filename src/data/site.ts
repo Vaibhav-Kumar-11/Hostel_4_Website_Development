@@ -13,7 +13,6 @@ export const site = {
     'The official website of Hostel 4, IIT Bombay — known to everyone on campus as Madhouse. Mess menus, events, announcements, GC standings, facilities and maintenance, all in one place.',
   /** Update after the site is live on the institute domain. */
   canonicalUrl: 'https://gymkhana.iitb.ac.in/~hostel4/',
-  builtBy: 'Team Vaibhav Kumar',
 } as const
 
 /** The seven top-level tabs. Nothing else belongs in the primary navigation. */

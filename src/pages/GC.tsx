@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Trophy } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
 import { StandingsCard } from '@/components/gc/StandingsCard'
-import { PlaceholderNote, Reveal, Section, SectionHeading } from '@/components/ui/primitives'
+import { Reveal, Section, SectionHeading } from '@/components/ui/primitives'
 import { GC_CATEGORIES, GC_TEAMS, GC_YEARS, gcCategoryMeta, gcResults } from '@/data/gc'
 import type { GCCategory } from '@/types/content'
 import { site } from '@/data/site'
@@ -37,8 +37,6 @@ export default function GC() {
         .sort((a, b) => b.year - a.year || a.category.localeCompare(b.category)),
     [category],
   )
-
-  const anyDeclared = gcResults.some((r) => r.position !== null)
 
   return (
     <>
@@ -133,7 +131,7 @@ export default function GC() {
                 </caption>
                 <thead>
                   <tr className="border-b bg-[rgb(var(--surface-sunken))]">
-                    {['Year', 'Category', 'Position', 'Status'].map((h) => (
+                    {['Year', 'Category', 'Position'].map((h) => (
                       <th
                         key={h}
                         className="muted px-5 py-4 font-mono text-[10px] uppercase tracking-[0.16em]"
@@ -165,9 +163,6 @@ export default function GC() {
                           <span className="muted">—</span>
                         )}
                       </td>
-                      <td className="muted px-5 py-4 font-mono text-[10px] uppercase tracking-wider">
-                        {r.position ? 'Declared' : 'Awaiting result'}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -176,15 +171,6 @@ export default function GC() {
           </div>
         </Reveal>
 
-        {!anyDeclared && (
-          <Reveal delay={2}>
-            <PlaceholderNote className="mt-6">
-              Every position on this page is empty on purpose — GC results are not something to
-              guess at. Enter real standings in <code className="font-mono">src/data/gc.ts</code>{' '}
-              and the cards, chart and table above all fill in from that one array.
-            </PlaceholderNote>
-          </Reveal>
-        )}
       </Section>
 
       {/* ── Trophy wall ── */}
