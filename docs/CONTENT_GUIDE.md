@@ -32,7 +32,7 @@ If you made a typo in a data file, `npm run build` fails and tells you the file 
 
 **Never invent a fact.**
 
-If you do not have the real value yet, leave the placeholder. The site has designed "awaiting details" states for exactly this, and they look intentional. A made-up phone number or GC position is worse than an honest blank.
+If you do not have the real value yet, leave the field empty. The site is built to omit anything it has no value for -- an empty field simply does not render, so a half-filled page still looks finished. A made-up phone number or GC position is far worse than a blank.
 
 ---
 
@@ -139,15 +139,15 @@ Nothing is inferred on this route: what you type is what appears on the site. Le
 
 Editing `weeklyMenu` by hand, as described just above, remains perfectly fine for a one-dish correction.
 
-### Turn off the "sample menu" notice
+### MESS_DATA_VERIFIED
 
-Once the menu and timings are real:
+Set this to `true` once the menu and timings are the real published ones:
 
 ```ts
 export const MESS_DATA_VERIFIED = true
 ```
 
-The placeholder notes on the homepage disappear.
+Nothing on the page changes -- it is a marker for whoever maintains the file next, so they can tell at a glance whether the menu has been confirmed with the mess council or is still the starter content.
 
 ---
 
@@ -228,7 +228,7 @@ Each card starts empty on purpose. To fill one in:
 },
 ```
 
-Leave any field as `null` to hide it. Setting `name` alone is enough to take the card out of its "awaiting details" state.
+Leave any field as `null` to hide it -- the card omits the row entirely rather than showing an empty label. Until a name is set, the card leads with the role instead, so it reads as a card about a position.
 
 **Portrait photos:** square, at least 400×400px, ideally under 200 KB.
 
