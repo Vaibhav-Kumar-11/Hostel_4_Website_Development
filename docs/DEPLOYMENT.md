@@ -95,11 +95,38 @@ Either connect the repository at <https://app.netlify.com/start> with build comm
 
 ## GitHub Pages
 
-The repository includes `.github/workflows/deploy.yml`, which builds and publishes on every push to `main`.
+Not wired up by default, because this project deploys through Vercel and a
+Pages job that fails because Pages was never enabled leaves a permanent red
+cross on the repository.
 
-To turn it on: **Settings → Pages → Build and deployment → Source → GitHub Actions**.
+To use it instead, enable **Settings → Pages → Source → GitHub Actions**, then
+add a deploy job to `.github/workflows/ci.yml`:
 
-The site then serves from `https://<username>.github.io/<repository>/`. The relative base and hash routing mean the project sub-path needs no special handling, and `public/.nojekyll` stops GitHub from stripping asset folders.
+```yaml
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# …after the build job, which must also upload a Pages artifact:
+#   - uses: actions/upload-pages-artifact@v3
+#     with: { path: dist }
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+The site then serves from `https://<username>.github.io/<repository>/`. The
+relative base and hash routing mean the project sub-path needs no special
+handling, and `public/.nojekyll` stops GitHub stripping the asset folders.
 
 ---
 

@@ -1,4 +1,11 @@
-name: Build & Deploy
+name: CI
+
+# Type-checks and builds every push and pull request, so a broken commit is
+# caught here rather than in a deploy.
+#
+# Deployment is handled by Vercel, which builds from this repository directly.
+# GitHub Pages is available as an alternative — see docs/DEPLOYMENT.md for the
+# workflow to add if you ever want it.
 
 on:
   push:
@@ -9,15 +16,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
+    name: Type-check & build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,20 +42,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
         with:
+          name: dist
           path: dist
-
-  deploy:
-    # Only publish from main; pull requests stop after the build check above.
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          retention-days: 7
