@@ -60,12 +60,22 @@ function scheduleSweep() {
  */
 function installRecovery() {
   if (typeof document === 'undefined') return
+
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) sweep()
   })
   window.addEventListener('scroll', sweep, { passive: true })
   window.addEventListener('resize', sweep, { passive: true })
-  window.setTimeout(sweep, 1200)
+
+  /*
+    Late layout shifts are the awkward case. An element can mount below the
+    fold, miss the sweep that follows it, and then be pushed up into view as
+    fonts load or images claim their space — with no scroll event to prompt a
+    re-check. Watching the document for size changes catches exactly that.
+  */
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => sweep()).observe(document.documentElement)
+  }
 }
 
 function observer(): IntersectionObserver | null {
