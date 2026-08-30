@@ -185,9 +185,13 @@ This works because of two deliberate choices:
 1. **`base: './'`** in `vite.config.ts` — assets are referenced relatively, so the bundle does not care what path it is served from.
 2. **Hash routing** — `/#/events` is resolved by the browser, never sent to Apache. A resident who refreshes on a deep link gets the page, not a 404. On an Apache user directory we cannot add rewrite rules, so history routing would break exactly there.
 
-### Vercel / Netlify / GitHub Pages
+### Vercel / Netlify
 
-Build command `npm run build`, output directory `dist`. No further configuration.
+Build command `npm run build`, output directory `dist`. No further configuration, and no environment variables — the site has no secrets and makes no API calls.
+
+GitHub Pages works too; the job to add is in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+`.github/workflows/ci.yml` type-checks and builds every push and pull request, so a broken commit is caught before it reaches a deploy.
 
 ---
 
