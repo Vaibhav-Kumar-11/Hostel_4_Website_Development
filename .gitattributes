@@ -1,0 +1,14 @@
+# Normalise line endings so the repository is byte-identical for everyone,
+# whichever OS a contributor is on. Without this, an edit made on Windows can
+# rewrite an entire file in the diff purely by swapping CRLF for LF.
+* text=auto eol=lf
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
