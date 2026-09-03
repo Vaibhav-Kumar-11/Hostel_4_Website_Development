@@ -8,8 +8,9 @@ name: CI
 # workflow to add if you ever want it.
 
 on:
+  # Every branch, not just main, so work can be verified before it is merged.
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
     branches: [main]
   workflow_dispatch:
