@@ -141,8 +141,22 @@ export default function Layout() {
         aria-hidden
       />
 
+      {/*
+        Handled in JS rather than by the browser: a bare "#main" fragment
+        would replace the router's hash and navigate away from the page the
+        reader is trying to skip into. The href stays for semantics and for
+        the status bar; the click does the work.
+      */}
       <a
         href="#main"
+        onClick={(e) => {
+          e.preventDefault()
+          const main = document.getElementById('main')
+          if (!main) return
+          main.setAttribute('tabindex', '-1')
+          main.focus({ preventScroll: true })
+          main.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+        }}
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-madhouse-500 focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white"
       >
         Skip to content

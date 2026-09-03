@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { BookOpen, ChevronDown, ExternalLink, Images, Link2 } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
 import Gallery from '@/components/resources/Gallery'
@@ -42,13 +43,18 @@ export default function Resources() {
             { label: 'Links', to: '#links' },
             { label: 'Emergency', to: '#emergency' },
           ].map((s) => (
-            <a
+            /*
+              Routed links, not bare fragments. Under a hash router an
+              href of "#emergency" overwrites the route itself and lands the
+              reader on the 404 page rather than further down this one.
+            */
+            <Link
               key={s.to}
-              href={s.to}
+              to={`/resources${s.to}`}
               className="chip border-white/25 text-ink-100 hover:border-madhouse-500 hover:text-madhouse-500"
             >
               {s.label}
-            </a>
+            </Link>
           ))}
         </nav>
       </PageHeader>

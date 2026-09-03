@@ -113,12 +113,16 @@ export default function Hero() {
           <Link to="/about" className="btn btn-primary">
             Explore Madhouse
           </Link>
-          <a
-            href="#live"
+          {/*
+            `/#live`, not `#live`. A bare fragment would replace the router's
+            own hash and send the reader to the 404 page.
+          */}
+          <Link
+            to="/#live"
             className="btn border border-white/25 text-ink-50 backdrop-blur-sm transition-colors hover:bg-white/10"
           >
             What&apos;s happening
-          </a>
+          </Link>
         </div>
       </motion.div>
 
@@ -141,8 +145,8 @@ export default function Hero() {
       )}
 
       {/* Scroll cue */}
-      <a
-        href="#live"
+      <Link
+        to="/#live"
         aria-label="Scroll to Madhouse Live"
         className="anim-rise absolute bottom-[4.5rem] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-ink-300 transition-colors hover:text-madhouse-500 sm:flex"
         style={delay(1.4)}
@@ -151,7 +155,7 @@ export default function Hero() {
         <span className="animate-bounce">
           <ArrowDown size={15} />
         </span>
-      </a>
+      </Link>
     </section>
   )
 }
