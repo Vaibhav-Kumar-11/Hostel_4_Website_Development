@@ -33,8 +33,21 @@ export default function Hero() {
 
   return (
     <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-ink-950 text-ink-50">
-      {/* Photograph */}
-      <motion.div className="absolute inset-0 -z-10" style={reduced ? undefined : { y: imageY }}>
+      {/*
+        DO NOT put `-z-10` on the photograph or the scrims.
+
+        This section sits inside `.page-enter`, which animates opacity and so
+        forms a stacking context. Within one, negative-z-index descendants
+        paint *below* the in-flow block boxes — including this section's own
+        opaque `bg-ink-950`. The photograph was therefore hidden behind the
+        background of the element containing it: loaded, full size, at opacity
+        1, and completely invisible. The DOM looks perfectly healthy in that
+        state, which is why it survived several passes.
+
+        Everything here is layered by document order instead: photograph,
+        scrims, grain, then the content marked `relative z-10` on top.
+      */}
+      <motion.div className="absolute inset-0" style={reduced ? undefined : { y: imageY }}>
         <img
           src={asset(media.hero)}
           alt="Hostel 4, IIT Bombay — the residential wings and quadrangle at night"
@@ -49,12 +62,12 @@ export default function Hero() {
         while leaving the right of the frame clear, so the hostel is visible
         instead of being buried under the overlay meant to make it readable.
       */}
-      <div className="scrim-v absolute inset-0 -z-10" aria-hidden />
-      <div className="scrim-h absolute inset-0 -z-10" aria-hidden />
-      <div className="absolute inset-0 -z-10 bg-grain opacity-[0.16] mix-blend-overlay" aria-hidden />
+      <div className="scrim-v absolute inset-0" aria-hidden />
+      <div className="scrim-h absolute inset-0" aria-hidden />
+      <div className="absolute inset-0 bg-grain opacity-[0.16] mix-blend-overlay" aria-hidden />
 
       <motion.div
-        className="shell flex flex-1 flex-col justify-center pb-32 pt-32 sm:pb-40"
+        className="relative z-10 shell flex flex-1 flex-col justify-center pb-32 pt-32 sm:pb-40"
         style={reduced ? undefined : { y: contentY, opacity: contentOpacity }}
       >
         {/* Live badge */}
