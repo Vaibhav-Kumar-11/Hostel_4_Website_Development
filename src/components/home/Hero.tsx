@@ -43,15 +43,14 @@ export default function Hero() {
         />
       </motion.div>
 
-      {/* Overlays: vertical scrim for legibility, warm side wash for mood. */}
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-ink-950/85 via-ink-950/45 to-ink-950"
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950/80 via-ink-950/25 to-transparent"
-        aria-hidden
-      />
+      {/*
+        Two scrims rather than one flat wash: see .scrim-v / .scrim-h in
+        index.css. They shade the type on the left and the navbar at the top
+        while leaving the right of the frame clear, so the hostel is visible
+        instead of being buried under the overlay meant to make it readable.
+      */}
+      <div className="scrim-v absolute inset-0 -z-10" aria-hidden />
+      <div className="scrim-h absolute inset-0 -z-10" aria-hidden />
       <div className="absolute inset-0 -z-10 bg-grain opacity-[0.16] mix-blend-overlay" aria-hidden />
 
       <motion.div
