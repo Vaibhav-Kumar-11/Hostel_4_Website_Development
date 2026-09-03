@@ -36,31 +36,40 @@ export default function Layout() {
   /*
     Scroll management for route changes and anchors.
 
-    Driven by `window.location.hash` rather than by the router. In a hash
-    router the URL for an anchor carries two hashes -- #/resources#emergency --
-    and React Router does not report a location change for those at all: the
-    page routes and renders, but this effect never re-ran, so no anchor on the
-    site ever scrolled. Reading the URL directly sidesteps the question, and
-    `hashchange` is guaranteed by the browser to fire on every one of these.
+    This watches the URL rather than the router, and polls rather than
+    listening, because neither of the obvious approaches works here.
 
-    Everything after the SECOND '#' is the anchor; everything before it is the
-    router's business, not ours.
+    Anchors live in URLs with two hashes -- #/resources#emergency -- and
+    React Router does not report those as a location change, so an effect
+    keyed on `useLocation()` never re-runs for them. Instrumenting the live
+    site made that plain: scrollIntoView and scrollTo were called zero times
+    across such a navigation, and exactly once for a plain route.
+
+    The `hashchange` event does not help either. HashRouter navigates with
+    history.pushState, and pushState does not fire hashchange -- so the event
+    only ever arrived when a URL was typed by hand, never when a link was
+    clicked.
+
+    Comparing window.location.href on an interval is immune to both. It costs
+    one string comparison every tenth of a second and it cannot be outwitted
+    by the router's internals.
   */
   useEffect(() => {
     let frame = 0
-    const cancel = () => {
+    const cancelPending = () => {
       if (frame) cancelAnimationFrame(frame)
       frame = 0
     }
 
+    /** Everything after the second '#'; the rest is the router's business. */
     const anchorFromUrl = () => {
       const raw = window.location.hash
       const second = raw.indexOf('#', 1)
       return second === -1 ? '' : decodeURIComponent(raw.slice(second + 1))
     }
 
-    const run = () => {
-      cancel()
+    const sync = () => {
+      cancelPending()
       const id = anchorFromUrl()
 
       if (!id) {
@@ -119,11 +128,18 @@ export default function Layout() {
       frame = requestAnimationFrame(attempt)
     }
 
-    run()
-    window.addEventListener('hashchange', run)
+    let lastHref = window.location.href
+    sync()
+
+    const watch = window.setInterval(() => {
+      if (window.location.href === lastHref) return
+      lastHref = window.location.href
+      sync()
+    }, 100)
+
     return () => {
-      cancel()
-      window.removeEventListener('hashchange', run)
+      window.clearInterval(watch)
+      cancelPending()
     }
   }, [reduced])
 
