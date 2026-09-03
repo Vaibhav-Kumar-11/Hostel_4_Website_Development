@@ -53,9 +53,11 @@ A fast, responsive, content-driven web portal for a hostel of over 1200 resident
 
 **📱 Mobile-first navigation** — the mobile drawer leads with the five things residents actually open the site for: Mess, Events, Maintenance, Gallery, Emergency. Everything important is 1–2 taps away.
 
-**🗺 Floor plans** — a nine-level explorer for a 1250-room building, so residents and visitors can find a wing or a facility by floor rather than by asking someone in the corridor.
+**🗺 Floor plans** — the real architectural drawings across all ten levels: the ground floor, and the residential plate that floors 1 to 9 share. Keyboard navigable, and in a 1250-room building it is the difference between finding a wing and asking someone in the corridor.
 
 **📄 Weekly mess PDF pipeline** — the mess publishes a menu PDF each week. Drop it in to publish it as-is, or run the importer to transcribe it into the live meal cards. The importer previews everything it read and refuses any cell it is not sure of, so a bad parse cannot quietly reach the site.
+
+**🧮 Mess rebate calculator** — days away come off the mess bill, and it is the one sum every resident does, usually getting it wrong by counting days instead of nights. The rate is never invented: it prefills if the council supplies one, otherwise the resident types the figure from their own bill and it is remembered on their device.
 
 **🚨 Emergency contacts** — deliberately not a top-level tab. They appear on the homepage, in Resources and in the footer, and every card becomes a one-tap `tel:` link on mobile the moment a real number is supplied.
 
@@ -113,6 +115,8 @@ Open <http://localhost:5173>.
 .
 ├── public/
 │   ├── images/hostel/        # Hostel photography (real photos only)
+│   ├── floors/              # Floor plan drawings
+│   ├── mess/                # This week's menu PDF
 │   ├── favicon.svg
 │   ├── manifest.webmanifest
 │   └── robots.txt
@@ -125,7 +129,7 @@ Open <http://localhost:5173>.
 │   │   ├── events/           # Cards, EventCalendar
 │   │   ├── gc/               # StandingsCard
 │   │   ├── life/             # AmenityCard, FloorPlans
-│   │   └── resources/        # Gallery, BookingModule, EmergencyContacts
+│   │   └── resources/        # Gallery, BookingModule, RebateCalculator, EmergencyContacts
 │   ├── data/                 # ← ALL EDITABLE CONTENT LIVES HERE
 │   ├── hooks/                # Theme, scroll, viewport, counters, hotkeys
 │   ├── lib/                  # Mess clock, schedule, .ics builder, utils
@@ -254,8 +258,8 @@ Everything below is built and waiting on content rather than on code:
 
 - **Weekly mess PDF** — drop `current-menu.pdf` into `public/mess/`, or run
   `npm run mess:menu -- menu.pdf` to refresh the live meal cards from it.
-- **Floor plans** — the nine-level explorer is live; add drawings to
-  `public/images/floors/` and details to `src/data/floors.ts`.
+- **Floor plans** — the drawings are live across all ten levels; add room
+  ranges, wings and per-floor facilities in `src/data/floors.ts`.
 - **Community channels** — add the WhatsApp and social links in
   `src/components/home/Community.tsx` and the channel cards appear.
 - **Council, GC, legacy, gallery** — data files are typed and commented,
