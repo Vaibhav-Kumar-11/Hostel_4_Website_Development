@@ -169,13 +169,15 @@ function FloorPlanExplorer() {
 
 /**
  * The plans the hostel office supplied are PDFs — vector drawings, which is
- * the right format for something people need to zoom into to find a room.
+ * the right format for something people zoom into to find a room.
  *
- * `<object>` lets the browser render it inline with its own PDF viewer, so
- * there is no conversion step in the pipeline and no loss of detail. Browsers
- * that decline to render a PDF inline — most mobile ones — fall through to the
- * child content instead of showing an empty box, so the button below is always
- * reachable and is the whole feature on a phone.
+ * `<object>` asks the browser to render one inline, which keeps the full
+ * resolution and adds no conversion step and no bundle weight. Plenty of
+ * browsers decline — most mobile ones do — so the fallback matters as much as
+ * the embed: rather than apologising for the browser, it shows the schematic
+ * of the plate and leans on the button, which opens the real drawing in the
+ * viewer the device already has. Both paths end with the resident looking at
+ * the actual plan.
  */
 function PlanDrawing({ floor }: { floor: Floor }) {
   const href = asset(floor.plan!)
@@ -190,12 +192,21 @@ function PlanDrawing({ floor }: { floor: Floor }) {
           aria-label={`Floor plan of the ${name} floor of Hostel 4`}
           className="h-[22rem] w-full sm:h-[30rem]"
         >
-          {/* Shown only when the browser will not render a PDF inline. */}
-          <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
-            <FileText size={26} className="text-madhouse-500" aria-hidden />
-            <p className="muted max-w-xs text-sm leading-relaxed">
-              Your browser cannot show the drawing inline. Open it in a new tab to zoom in.
-            </p>
+          <div className="relative h-[22rem] w-full sm:h-[30rem]">
+            <div className="pointer-events-none absolute inset-0 p-6" aria-hidden>
+              <FloorPlate className="h-full w-full" />
+            </div>
+            <div className="absolute inset-x-0 bottom-0 flex justify-center p-6">
+              <a
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="btn btn-primary px-5 py-2.5 text-xs"
+              >
+                <FileText size={14} aria-hidden />
+                View the {name} floor plan
+              </a>
+            </div>
           </div>
         </object>
       </div>
