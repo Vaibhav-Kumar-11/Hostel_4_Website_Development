@@ -38,19 +38,45 @@ export default function Layout() {
    * The frame delay lets the incoming page paint before we measure offsets.
    */
   useEffect(() => {
-    if (location.hash) {
-      const id = location.hash.slice(1)
-      requestAnimationFrame(() => {
-        const el = document.getElementById(id)
-        if (el) {
-          el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
-          return
-        }
-        window.scrollTo({ top: 0 })
-      })
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'auto' })
       return
     }
-    window.scrollTo({ top: 0, behavior: 'auto' })
+
+    /*
+      Wait for the target to exist before scrolling to it.
+
+      Six of the seven pages are code-split, so a link like
+      /resources#emergency arrives before the Resources chunk has finished
+      loading and rendering. A single animation frame was not nearly long
+      enough: the element was still missing, the fallback ran, and the
+      resident was dropped at the top of a page whose useful part was five
+      thousand pixels further down. It looked like the anchor was being
+      ignored entirely.
+
+      Polling ends the moment the element appears, so the common case — an
+      anchor on the page already showing — still scrolls on the next frame.
+    */
+    const id = location.hash.slice(1)
+    const deadline = performance.now() + 3000
+    let frame = 0
+
+    const attempt = () => {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+        return
+      }
+      if (performance.now() < deadline) {
+        frame = requestAnimationFrame(attempt)
+        return
+      }
+      // The anchor genuinely does not exist on this page.
+      window.scrollTo({ top: 0 })
+    }
+
+    frame = requestAnimationFrame(attempt)
+    return () => cancelAnimationFrame(frame)
   }, [location.pathname, location.hash, reduced])
 
   const scrollTop = useCallback(

@@ -77,6 +77,16 @@ export interface CouncilMember extends Placeheld {
   /** Leave as null until a real name is supplied — never invent one. */
   name: string | null
   role: string
+  /**
+   * Tier in the hostel hierarchy, 1 (Warden) through 5 (secretaries).
+   * Drives the order and the grouping on the About page.
+   */
+  level: 1 | 2 | 3 | 4 | 5
+  /**
+   * `id` of the role this one reports to. Used to draw the tree, so a
+   * secretary appears beneath its own councillor. Omit for the top tier.
+   */
+  reportsTo?: string
   /** e.g. 'Third Year • Mechanical Engineering' */
   affiliation?: string | null
   bio?: string | null
@@ -144,8 +154,14 @@ export interface LegacyEntry extends Placeheld {
 export interface EmergencyContact extends Placeheld {
   id: string
   label: string
-  /** null renders a "to be confirmed" state instead of a dead tel: link. */
+  /** null renders the contact without a number rather than a dead tel: link. */
   phone: string | null
+  /**
+   * True for a campus extension, which only connects from inside IIT Bombay.
+   * The UI labels these so nobody saves one to a phone expecting it to work
+   * from off campus.
+   */
+  internal?: boolean
   detail?: string
   critical?: boolean
 }

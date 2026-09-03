@@ -55,11 +55,17 @@ export default function EmergencyContacts({ compact = false }: { compact?: boole
 
                 {dial && (
                   <span className="shrink-0 text-right">
-                    <span className="block font-mono text-sm font-semibold text-madhouse-500">
+                    <span className="block font-mono text-base font-semibold text-madhouse-500">
                       {contact.phone}
                     </span>
-                    <span className="muted block font-mono text-[9px] uppercase tracking-wider sm:hidden">
-                      Tap to call
+                    {/*
+                      A campus extension is four digits and only connects from
+                      inside IIT Bombay. Saying so is not a caveat for its own
+                      sake: someone saving this to their phone needs to know it
+                      will not dial from off campus.
+                    */}
+                    <span className="muted block font-mono text-[9px] uppercase tracking-wider">
+                      {contact.internal ? 'Campus extension' : 'Tap to call'}
                     </span>
                   </span>
                 )}

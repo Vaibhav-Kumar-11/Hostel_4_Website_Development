@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowRight, CalendarDays, CornerDownLeft, Dumbbell, Home, Info,
+  ArrowRight, CalendarDays, CornerDownLeft, Dumbbell, Home, Info, Instagram,
   Megaphone, Phone, Search, Trophy, UtensilsCrossed, Wrench,
 } from 'lucide-react'
 import { CLR_TICKET_URL } from '@/data/site'
@@ -64,6 +64,7 @@ export default function CommandPalette({ open, onClose }: Props) {
       { id: 'a-gallery', label: 'Open the photo roll', group: 'Quick actions', to: '/resources#gallery', icon: <Search size={16} />, keywords: 'photos pictures gallery memories' },
       { id: 'a-rebate', label: 'Mess rebate calculator', hint: 'Work out what days away are worth', group: 'Quick actions', to: '/resources#rebate', icon: <UtensilsCrossed size={16} />, keywords: 'rebate refund mess bill going home leave money' },
       { id: 'a-floors', label: 'Floor plans', hint: 'Find a room or a wing by level', group: 'Quick actions', to: '/life#floor-plans', icon: <Dumbbell size={16} />, keywords: 'floor plan map layout wing room level building ground' },
+      { id: 'a-instagram', label: 'Madhouse on Instagram', hint: '@madhouseiitb', group: 'Quick actions', href: 'https://www.instagram.com/madhouseiitb/', icon: <Instagram size={16} />, keywords: 'instagram insta social photos handle follow' },
     ]
 
     const eventItems: Item[] = events.map((e) => ({

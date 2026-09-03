@@ -2,96 +2,89 @@ import type { CouncilMember } from '@/types/content'
 
 /**
  * ── COUNCIL & ADMINISTRATION ────────────────────────────────────────────────
- * Roles are real; NAMES ARE DELIBERATELY EMPTY.
+ * The hostel's chain of responsibility, five tiers deep. The roles and the
+ * order are confirmed; the people are not filled in yet, and no name, photo,
+ * email or phone number has been invented.
  *
- * No name, photo, phone number or email has been invented. Each card renders a
- * clean "awaiting details" state until the Council supplies the real values.
+ *   1  Warden and the two Associate Wardens
+ *   2  Hall Manager
+ *   3  General Secretary
+ *   4  Councillors, plus the System Administrator
+ *   5  The secretaries reporting to each councillor
  *
- * To fill a card in:
+ * ── HOW TO FILL A ROLE IN ───────────────────────────────────────────────────
  *   name:        'Full Name'
- *   affiliation: 'Third Year • Computer Science'
+ *   affiliation: 'Third Year • Computer Science'   (or a department, for staff)
  *   bio:         one or two sentences
- *   email/phone: shown as tap-to-contact buttons; leave null to hide
+ *   email/phone: rendered as contact buttons; leave null to hide
  *   photo:       'images/council/<file>.jpg'  (drop the file in /public/images/council)
- *   state:       'verified'  ← flips the card out of placeholder styling
+ *   state:       'verified'
+ *
+ * Anything left `null` is not rendered — the card leads with the role instead,
+ * so a tier that is not yet filled still looks finished.
+ *
+ * ── ADDING THE LEVEL 5 SECRETARIES ──────────────────────────────────────────
+ * Each secretary is an ordinary entry with `reportsTo` set to its councillor's
+ * `id`. For example, under the Cultural Councillor:
+ *
+ *   { id: 'c-sec-music', role: 'Music Secretary', level: 5,
+ *     reportsTo: 'c-cult', name: null, ... }
+ *
+ * The tree builds itself from `reportsTo`, so nothing else needs editing — the
+ * secretary appears beneath the right councillor automatically.
  */
 
+const blank = {
+  name: null,
+  affiliation: null,
+  bio: null,
+  email: null,
+  phone: null,
+  photo: null,
+  state: 'placeholder' as const,
+}
+
 export const council: CouncilMember[] = [
-  {
-    id: 'c-warden',
-    role: 'Warden',
-    group: 'Administration',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-assoc-warden',
-    role: 'Associate Warden',
-    group: 'Administration',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-office',
-    role: 'Hostel Office / Caretaker',
-    group: 'Administration',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-gsec',
-    role: 'General Secretary',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-tech',
-    role: 'Technical Secretary',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-sports',
-    role: 'Sports Secretary',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-cult',
-    role: 'Cultural Secretary',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-sus',
-    role: 'Sustainability Secretary',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-maint',
-    role: 'Maintenance Representative',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-web',
-    role: 'Web / Media Representative',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
-  {
-    id: 'c-mess',
-    role: 'Mess Secretary',
-    group: 'Council',
-    name: null, affiliation: null, bio: null, email: null, phone: null, photo: null,
-    state: 'placeholder',
-  },
+  /* ── Level 1 — Wardens ─────────────────────────────────────────────────── */
+  { id: 'c-warden', role: 'Warden', level: 1, group: 'Administration', ...blank },
+  { id: 'c-assoc-warden-1', role: 'Associate Warden I', level: 1, group: 'Administration', ...blank },
+  { id: 'c-assoc-warden-2', role: 'Associate Warden II', level: 1, group: 'Administration', ...blank },
+
+  /* ── Level 2 — Hall Manager ────────────────────────────────────────────── */
+  { id: 'c-hall-manager', role: 'Hall Manager', level: 2, group: 'Administration', ...blank },
+
+  /* ── Level 3 — General Secretary ───────────────────────────────────────── */
+  { id: 'c-gsec', role: 'General Secretary', level: 3, group: 'Council', ...blank },
+
+  /* ── Level 4 — Councillors ─────────────────────────────────────────────── */
+  { id: 'c-tech', role: 'Technical Councillor', level: 4, group: 'Council', reportsTo: 'c-gsec', ...blank },
+  { id: 'c-mess', role: 'Mess Councillor', level: 4, group: 'Council', reportsTo: 'c-gsec', ...blank },
+  { id: 'c-cult', role: 'Cultural Councillor', level: 4, group: 'Council', reportsTo: 'c-gsec', ...blank },
+  { id: 'c-maint', role: 'Maintenance Councillor', level: 4, group: 'Council', reportsTo: 'c-gsec', ...blank },
+  { id: 'c-sports', role: 'Sports Councillor', level: 4, group: 'Council', reportsTo: 'c-gsec', ...blank },
+  { id: 'c-sysadmin', role: 'System Administrator', level: 4, group: 'Council', reportsTo: 'c-gsec', ...blank },
+
+  /* ── Level 5 — Secretaries ─────────────────────────────────────────────────
+     Add each secretary here with `level: 5` and `reportsTo` set to the id of
+     the councillor above. None have been listed yet, so this tier is empty and
+     the page simply does not draw it. */
 ]
+
+/** The tiers, in order, with the label each one carries on the page. */
+export const councilLevels: { level: number; label: string }[] = [
+  { level: 1, label: 'Wardens' },
+  { level: 2, label: 'Hall Management' },
+  { level: 3, label: 'General Secretary' },
+  { level: 4, label: 'Councillors' },
+  { level: 5, label: 'Secretaries' },
+]
+
+/** Everyone on a given tier, in the order they are listed above. */
+export function membersAtLevel(level: number): CouncilMember[] {
+  return council.filter((m) => m.level === level)
+}
+
+/** The people reporting directly to one role. */
+export function directReports(id: string): CouncilMember[] {
+  return council.filter((m) => m.reportsTo === id)
+}

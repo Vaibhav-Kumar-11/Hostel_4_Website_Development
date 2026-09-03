@@ -39,7 +39,7 @@ export const CLR_TICKET_URL =
  * of linking somewhere wrong — fill these in once the Council confirms them.
  */
 export const socials = [
-  { id: 'instagram', label: 'Instagram', href: null as string | null },
+  { id: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/madhouseiitb/' as string | null },
   { id: 'youtube', label: 'YouTube', href: null as string | null },
   { id: 'linkedin', label: 'LinkedIn', href: null as string | null },
   { id: 'facebook', label: 'Facebook', href: null as string | null },

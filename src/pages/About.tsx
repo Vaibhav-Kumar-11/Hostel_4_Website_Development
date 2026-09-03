@@ -1,9 +1,8 @@
 import { History } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
-import { CouncilCard } from '@/components/about/CouncilCard'
+import CouncilTree from '@/components/about/CouncilTree'
 import LocationSection from '@/components/about/LocationSection'
 import { Reveal, Section, SectionHeading, Stat } from '@/components/ui/primitives'
-import { council } from '@/data/council'
 import { legacy } from '@/data/gallery'
 import { hostelFacts } from '@/data/utilities'
 import { media, site } from '@/data/site'
@@ -21,9 +20,6 @@ export default function About() {
     description:
       'Hostel 4, IIT Bombay — the largest hostel on campus, and the community that lives in it. Council, hostel facts, legacy and location.',
   })
-
-  const administration = council.filter((m) => m.group === 'Administration')
-  const secretaries = council.filter((m) => m.group === 'Council')
 
   return (
     <>
@@ -119,26 +115,10 @@ export default function About() {
               Meet the Madhouse <span className="text-madhouse-500">Council</span>
             </>
           }
-          description="Wardens, secretaries and representatives — who to go to, and for what."
+          description="Who to take something to, and who to go to when that does not work. The hostel runs top to bottom in that order."
         />
 
-        <h3 className="eyebrow mb-5">Administration</h3>
-        <div className="mb-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {administration.map((m, i) => (
-            <Reveal key={m.id} delay={i}>
-              <CouncilCard member={m} />
-            </Reveal>
-          ))}
-        </div>
-
-        <h3 className="eyebrow mb-5">Hostel Council</h3>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {secretaries.map((m, i) => (
-            <Reveal key={m.id} delay={i}>
-              <CouncilCard member={m} />
-            </Reveal>
-          ))}
-        </div>
+        <CouncilTree />
 
       </Section>
 

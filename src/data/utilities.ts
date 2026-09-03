@@ -2,22 +2,26 @@ import type { EmergencyContact, Guide, ResourceLink } from '@/types/content'
 import { instituteLinks } from './site'
 
 /**
- * ── EMERGENCY CONTACTS ──────────────────────────────────────────────────────
- * `phone: null` is deliberate. No number has been guessed. Each card shows a
- * clear "number pending" state; the moment a real number is filled in it
- * becomes a one-tap `tel:` link on mobile.
+ * -- EMERGENCY CONTACTS ------------------------------------------------------
+ * Confirmed by the Hostel 4 Council. These six are the full list; do not add a
+ * seventh without a source.
  *
- * Fill in as: phone: '+9122XXXXXXXX', state: 'verified'
+ * The numbers are campus extensions, dialled as-is from any intercom or
+ * landline inside IIT Bombay. They carry `internal: true` so the page can say
+ * so, because four digits typed into a mobile off campus will not connect and
+ * an emergency is the wrong moment to discover that.
+ *
+ * `critical: true` gives a contact red styling and puts it in the short list
+ * shown on the homepage and the Maintenance page.
  */
 
 export const emergencyContacts: EmergencyContact[] = [
-  { id: 'em-ambulance', label: 'Ambulance', phone: null, detail: 'Campus medical emergency response', critical: true, state: 'placeholder' },
-  { id: 'em-security', label: 'Campus Security', phone: null, detail: 'IIT Bombay Security Control Room', critical: true, state: 'placeholder' },
-  { id: 'em-hospital', label: 'IITB Hospital', phone: null, detail: 'Institute Medical Centre', critical: true, state: 'placeholder' },
-  { id: 'em-fire', label: 'Fire', phone: null, detail: 'Campus fire response', critical: true, state: 'placeholder' },
-  { id: 'em-office', label: 'Hostel 4 Office', phone: null, detail: 'Caretaker / hostel desk', state: 'placeholder' },
-  { id: 'em-warden', label: 'Warden on Call', phone: null, detail: 'For escalations outside office hours', state: 'placeholder' },
-  { id: 'em-wellness', label: 'Student Wellness Centre', phone: null, detail: 'Confidential counselling support', state: 'placeholder' },
+  { id: 'em-ambulance', label: 'Ambulance', phone: '1101', internal: true, detail: 'Campus medical emergency response', critical: true, state: 'verified' },
+  { id: 'em-qrt', label: 'Quick Response Team', phone: '1126', internal: true, detail: 'First responders for any campus emergency', critical: true, state: 'verified' },
+  { id: 'em-fire', label: 'Fire', phone: '1196', internal: true, detail: 'Campus fire response', critical: true, state: 'verified' },
+  { id: 'em-desk', label: 'Hostel 4 Main Desk', phone: '2604', internal: true, detail: 'The hostel front desk', state: 'verified' },
+  { id: 'em-hall-manager', label: 'Hall Manager', phone: '2704', internal: true, detail: 'Hostel administration and escalations', state: 'verified' },
+  { id: 'em-wellness', label: 'Student Wellness Centre', phone: '9075', internal: true, detail: 'Confidential counselling support', state: 'verified' },
 ]
 
 /**

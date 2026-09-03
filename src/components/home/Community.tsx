@@ -55,7 +55,7 @@ const channels: readonly Channel[] = [
     label: 'Instagram',
     description:
       'GC nights, Valfi and whatever the cult secretaries have taken over the common room to build.',
-    href: null,
+    href: 'https://www.instagram.com/madhouseiitb/',
     icon: Instagram,
   },
 ]

@@ -1,4 +1,4 @@
-import { AtSign, Phone, User } from 'lucide-react'
+import { AtSign, Phone, User, Users } from 'lucide-react'
 import type { CouncilMember } from '@/types/content'
 import { asset, cn, initials } from '@/lib/utils'
 
@@ -9,7 +9,14 @@ import { asset, cn, initials } from '@/lib/utils'
  * heading and omits the name line, so it reads as a card about a position
  * rather than one missing a person.
  */
-export function CouncilCard({ member }: { member: CouncilMember }) {
+export function CouncilCard({
+  member,
+  reportCount = 0,
+}: {
+  member: CouncilMember
+  /** Number of secretaries reporting to this role; 0 hides the line. */
+  reportCount?: number
+}) {
   const pending = !member.name
 
   return (
@@ -61,6 +68,13 @@ export function CouncilCard({ member }: { member: CouncilMember }) {
       {member.affiliation && <p className="muted mt-1.5 text-xs">{member.affiliation}</p>}
 
       {member.bio && <p className="muted mt-4 text-sm leading-relaxed">{member.bio}</p>}
+
+      {reportCount > 0 && (
+        <p className="muted mt-3 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider">
+          <Users size={11} />
+          {reportCount} {reportCount === 1 ? 'secretary' : 'secretaries'}
+        </p>
+      )}
 
       <div className="mt-auto w-full pt-6">
         {!pending && (
