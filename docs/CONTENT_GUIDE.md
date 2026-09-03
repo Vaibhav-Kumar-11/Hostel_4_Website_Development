@@ -2,7 +2,7 @@
 
 **Who this is for:** whoever maintains the Madhouse website next — most likely the Web Representative on the Hostel 4 Council.
 
-You do not need to know React to keep this site up to date. Every fact on the website comes from one of nine files in `src/data/`. Edit the file, save, and the change appears everywhere that fact is used.
+You do not need to know React to keep this site up to date. Every fact on the website comes from one of the files in `src/data/`. Edit the file, save, and the change appears everywhere that fact is used.
 
 ---
 
@@ -49,6 +49,7 @@ If you do not have the real value yet, leave the field empty. The site is built 
 | `src/data/amenities.ts` | Facilities and bookable equipment |
 | `src/data/gallery.ts` | Photo roll and the legacy timeline |
 | `src/data/utilities.ts` | Emergency contacts, important links, setup guides, hostel facts |
+| `src/data/floors.ts` | Floor plans: room ranges, wings and facilities per level |
 
 ---
 

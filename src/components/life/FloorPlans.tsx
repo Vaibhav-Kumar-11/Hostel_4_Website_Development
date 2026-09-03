@@ -88,13 +88,14 @@ function FloorPlanExplorer() {
   return (
     <Section id="floor-plans" tone="sunken" className="scroll-mt-24">
       <SectionHeading
-        eyebrow="Nine levels"
+        // Derived, so it cannot drift out of step with the data again.
+        eyebrow={`${floors.length} levels`}
         title={
           <>
             Floor <span className="text-madhouse-500">plans</span>
           </>
         }
-        description="Ground to eighth, plate by plate. Pick a level to see how it is laid out and what sits on it."
+        description="Ground to ninth, plate by plate. Pick a level to see how it is laid out and what sits on it."
       />
 
       <div className="grid gap-6 lg:grid-cols-[13.5rem_1fr] lg:items-start lg:gap-10">
