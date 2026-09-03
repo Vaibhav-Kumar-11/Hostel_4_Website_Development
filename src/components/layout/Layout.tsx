@@ -58,21 +58,52 @@ export default function Layout() {
       anchor on the page already showing — still scrolls on the next frame.
     */
     const id = location.hash.slice(1)
-    const deadline = performance.now() + 3000
+    const deadline = performance.now() + 2500
     let frame = 0
+    // Seeded with the height as it is now, so an anchor on a page that is
+    // already laid out reads as settled on the very first frame.
+    let lastHeight = document.documentElement.scrollHeight
+    let wasUnsettled = false
 
     const attempt = () => {
       const el = document.getElementById(id)
-      if (el) {
-        el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+
+      if (!el) {
+        if (performance.now() < deadline) {
+          frame = requestAnimationFrame(attempt)
+          return
+        }
+        // The anchor genuinely does not exist on this page.
+        window.scrollTo({ top: 0 })
         return
       }
-      if (performance.now() < deadline) {
-        frame = requestAnimationFrame(attempt)
+
+      /*
+        Existing is not the same as being in final position. On a page full of
+        lazy images the target sits near the top for the first few frames,
+        because everything above it still has zero height. Scrolling to it
+        then leaves the reader at the top of a page that afterwards grows to
+        several times the height — which is exactly how /resources#emergency
+        managed to land 10,000px short of the emergency contacts.
+
+        So re-anchor each frame until the document stops growing.
+      */
+      const height = document.documentElement.scrollHeight
+      const settled = height === lastHeight
+      lastHeight = height
+
+      if (!settled) {
+        // Instant while the layout is still moving; smooth would fight itself.
+        el.scrollIntoView({ behavior: 'auto', block: 'start' })
+        wasUnsettled = true
+        if (performance.now() < deadline) frame = requestAnimationFrame(attempt)
         return
       }
-      // The anchor genuinely does not exist on this page.
-      window.scrollTo({ top: 0 })
+
+      el.scrollIntoView({
+        behavior: wasUnsettled || reduced ? 'auto' : 'smooth',
+        block: 'start',
+      })
     }
 
     frame = requestAnimationFrame(attempt)

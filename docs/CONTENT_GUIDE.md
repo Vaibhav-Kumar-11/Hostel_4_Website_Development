@@ -343,13 +343,19 @@ This is the best page to crowdsource from alumni.
 
 ### Emergency numbers
 
-Every number is `null` until confirmed. Fill one in:
+Six are listed and all six are confirmed by the Council. **Do not add a seventh without a source**, and do not guess a digit.
 
 ```ts
-{ id: 'em-security', label: 'Campus Security', phone: '+912225767000', detail: 'IIT Bombay Security Control Room', critical: true, state: 'verified' },
+{ id: 'em-qrt', label: 'Quick Response Team', phone: '1126', internal: true, detail: 'First responders for any campus emergency', critical: true, state: 'verified' },
 ```
 
-The card immediately becomes a one-tap `tel:` link on mobile — on the homepage, in Resources and in the footer. `critical: true` gives it red styling and puts it in the short list shown on the homepage and the Maintenance page.
+| Field | What it does |
+|---|---|
+| `phone` | Rendered as a `tel:` link. `null` shows the contact with no number rather than a dead link. |
+| `internal` | `true` for a campus extension. The card then reads "Campus extension", because four digits will not connect from a mobile off campus. |
+| `critical` | Red styling, and includes the contact in the short list on the homepage and the Maintenance page. |
+
+Contacts appear on the homepage, in Resources and in the footer from this one list.
 
 ### LAN and Wi-Fi settings
 
