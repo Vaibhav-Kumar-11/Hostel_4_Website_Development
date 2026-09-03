@@ -3,6 +3,7 @@ import { BookOpen, ChevronDown, ExternalLink, Images, Link2 } from 'lucide-react
 import PageHeader from '@/components/ui/PageHeader'
 import Gallery from '@/components/resources/Gallery'
 import BookingModule from '@/components/resources/BookingModule'
+import RebateCalculator from '@/components/resources/RebateCalculator'
 import EmergencyContacts from '@/components/resources/EmergencyContacts'
 import { Reveal, Section, SectionHeading } from '@/components/ui/primitives'
 import { guides, resourceLinks } from '@/data/utilities'
@@ -36,6 +37,7 @@ export default function Resources() {
           {[
             { label: 'Photo roll', to: '#gallery' },
             { label: 'Bookings', to: '#bookings' },
+            { label: 'Mess rebate', to: '#rebate' },
             { label: 'Guides', to: '#guides' },
             { label: 'Links', to: '#links' },
             { label: 'Emergency', to: '#emergency' },
@@ -74,6 +76,20 @@ export default function Resources() {
           description="Music room, dance room, common room, indoor sports room — plus the sports gear, instruments and tech the council lends out."
         />
         <BookingModule />
+      </Section>
+
+      {/* -- Mess rebate -- */}
+      <Section id="rebate" className="scroll-mt-24">
+        <SectionHeading
+          eyebrow="Going home?"
+          title={
+            <>
+              Mess <span className="text-madhouse-500">rebate</span>
+            </>
+          }
+          description="Days away come off the mess bill. This works out how many and roughly how much, so you can file with a number already in hand."
+        />
+        <RebateCalculator />
       </Section>
 
       {/* ── Guides ── */}

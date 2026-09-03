@@ -77,3 +77,28 @@ export const weeklyMenu: WeeklyMenu = [
 export const weekdayNames = [
   'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
 ]
+
+/**
+ * ── MESS REBATE ─────────────────────────────────────────────────────────────
+ * Residents claim a rebate on mess charges for days they are away. The
+ * calculator on the Resources page uses the two values below.
+ *
+ * Both are `null` because neither has been confirmed, and neither may be
+ * guessed — a wrong rebate figure is the kind of error someone budgets around.
+ * While `ratePerDay` is null the calculator asks the resident for the daily
+ * charge from their own mess bill and remembers it on their device, so it
+ * works today and simply gets easier once the official figure is filled in.
+ *
+ *   ratePerDay:   the daily mess charge in rupees, e.g. 150
+ *   minimumDays:  the shortest absence that qualifies, e.g. 3
+ *   noticeDays:   how far ahead the application must be filed, e.g. 2
+ */
+export const messRebate: {
+  ratePerDay: number | null
+  minimumDays: number | null
+  noticeDays: number | null
+} = {
+  ratePerDay: null,
+  minimumDays: null,
+  noticeDays: null,
+}

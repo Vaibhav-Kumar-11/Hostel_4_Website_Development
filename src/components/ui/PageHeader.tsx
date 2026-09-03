@@ -46,7 +46,8 @@ export default function PageHeader({
             aria-hidden
             className="anim-zoom absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/80 to-ink-950/55" />
+          <div className="scrim-header-v absolute inset-0" aria-hidden />
+          <div className="scrim-header-h absolute inset-0" aria-hidden />
           <div className="absolute inset-0 bg-grain opacity-[0.14] mix-blend-overlay" />
         </>
       )}

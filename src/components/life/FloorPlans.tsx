@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { FileText, Maximize2 } from 'lucide-react'
 import { Reveal, Section, SectionHeading } from '@/components/ui/primitives'
 import { FLOOR_PLANS_ENABLED, floors, type Floor } from '@/data/floors'
 import { asset, cn } from '@/lib/utils'
@@ -163,6 +164,61 @@ function FloorPlanExplorer() {
   )
 }
 
+/* ── Plan drawing ────────────────────────────────────────────────────────── */
+
+/**
+ * The plans the hostel office supplied are PDFs — vector drawings, which is
+ * the right format for something people need to zoom into to find a room.
+ *
+ * `<object>` lets the browser render it inline with its own PDF viewer, so
+ * there is no conversion step in the pipeline and no loss of detail. Browsers
+ * that decline to render a PDF inline — most mobile ones — fall through to the
+ * child content instead of showing an empty box, so the button below is always
+ * reachable and is the whole feature on a phone.
+ */
+function PlanDrawing({ floor }: { floor: Floor }) {
+  const href = asset(floor.plan!)
+  const name = floor.label.toLowerCase()
+
+  return (
+    <figure className="mt-8">
+      <div className="overflow-hidden rounded-xl border bg-[rgb(var(--surface-sunken))]">
+        <object
+          data={`${href}#toolbar=0&navpanes=0&view=FitH`}
+          type="application/pdf"
+          aria-label={`Floor plan of the ${name} floor of Hostel 4`}
+          className="h-[22rem] w-full sm:h-[30rem]"
+        >
+          {/* Shown only when the browser will not render a PDF inline. */}
+          <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
+            <FileText size={26} className="text-madhouse-500" aria-hidden />
+            <p className="muted max-w-xs text-sm leading-relaxed">
+              Your browser cannot show the drawing inline. Open it in a new tab to zoom in.
+            </p>
+          </div>
+        </object>
+      </div>
+
+      <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <span className="muted text-xs leading-relaxed">
+          {floor.sharesTypicalPlan
+            ? 'Floors 1 to 9 share this layout.'
+            : 'Ground floor layout.'}
+        </span>
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="btn btn-ghost px-4 py-2 text-xs"
+        >
+          <Maximize2 size={13} aria-hidden />
+          Open full plan
+        </a>
+      </figcaption>
+    </figure>
+  )
+}
+
 /* ── Detail panel ────────────────────────────────────────────────────────── */
 
 function FloorDetail({ floor }: { floor: Floor }) {
@@ -210,17 +266,7 @@ function FloorDetail({ floor }: { floor: Floor }) {
           </p>
         )}
 
-        {floor.plan && (
-          <figure className="mt-8 overflow-hidden rounded-xl border bg-[rgb(var(--surface-sunken))]">
-            <img
-              src={asset(floor.plan)}
-              alt={`Plan of the ${floor.label.toLowerCase()} floor of Hostel 4`}
-              loading="lazy"
-              decoding="async"
-              className="h-auto w-full object-contain"
-            />
-          </figure>
-        )}
+        {floor.plan && <PlanDrawing floor={floor} />}
 
         {hasMeta && (
           <div className="mt-8 grid gap-7 border-t pt-8 sm:grid-cols-2">

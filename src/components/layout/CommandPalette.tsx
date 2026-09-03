@@ -62,6 +62,8 @@ export default function CommandPalette({ open, onClose }: Props) {
       { id: 'a-emergency', label: 'Emergency contacts', hint: 'Ambulance, security, hostel office', group: 'Quick actions', to: '/resources#emergency', icon: <Phone size={16} />, keywords: 'ambulance security fire warden help sos' },
       { id: 'a-book', label: 'Book a room or equipment', hint: 'Music room, projector, sports gear', group: 'Quick actions', to: '/resources#bookings', icon: <CalendarDays size={16} />, keywords: 'reserve booking guitar projector football' },
       { id: 'a-gallery', label: 'Open the photo roll', group: 'Quick actions', to: '/resources#gallery', icon: <Search size={16} />, keywords: 'photos pictures gallery memories' },
+      { id: 'a-rebate', label: 'Mess rebate calculator', hint: 'Work out what days away are worth', group: 'Quick actions', to: '/resources#rebate', icon: <UtensilsCrossed size={16} />, keywords: 'rebate refund mess bill going home leave money' },
+      { id: 'a-floors', label: 'Floor plans', hint: 'Find a room or a wing by level', group: 'Quick actions', to: '/life#floor-plans', icon: <Dumbbell size={16} />, keywords: 'floor plan map layout wing room level building ground' },
     ]
 
     const eventItems: Item[] = events.map((e) => ({
