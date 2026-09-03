@@ -33,82 +33,99 @@ export default function Layout() {
     return () => window.removeEventListener('keydown', onKey)
   }, [paletteOpen])
 
-  /**
-   * Route changes reset the scroll position; a hash scrolls to that section.
-   * The frame delay lets the incoming page paint before we measure offsets.
-   */
+  /*
+    Scroll management for route changes and anchors.
+
+    Driven by `window.location.hash` rather than by the router. In a hash
+    router the URL for an anchor carries two hashes -- #/resources#emergency --
+    and React Router does not report a location change for those at all: the
+    page routes and renders, but this effect never re-ran, so no anchor on the
+    site ever scrolled. Reading the URL directly sidesteps the question, and
+    `hashchange` is guaranteed by the browser to fire on every one of these.
+
+    Everything after the SECOND '#' is the anchor; everything before it is the
+    router's business, not ours.
+  */
   useEffect(() => {
-    if (!location.hash) {
-      window.scrollTo({ top: 0, behavior: 'auto' })
-      return
+    let frame = 0
+    const cancel = () => {
+      if (frame) cancelAnimationFrame(frame)
+      frame = 0
     }
 
-    /*
-      Wait for the target to exist before scrolling to it.
+    const anchorFromUrl = () => {
+      const raw = window.location.hash
+      const second = raw.indexOf('#', 1)
+      return second === -1 ? '' : decodeURIComponent(raw.slice(second + 1))
+    }
 
-      Six of the seven pages are code-split, so a link like
-      /resources#emergency arrives before the Resources chunk has finished
-      loading and rendering. A single animation frame was not nearly long
-      enough: the element was still missing, the fallback ran, and the
-      resident was dropped at the top of a page whose useful part was five
-      thousand pixels further down. It looked like the anchor was being
-      ignored entirely.
+    const run = () => {
+      cancel()
+      const id = anchorFromUrl()
 
-      Polling ends the moment the element appears, so the common case — an
-      anchor on the page already showing — still scrolls on the next frame.
-    */
-    const id = location.hash.slice(1)
-    const deadline = performance.now() + 2500
-    let frame = 0
-    // Seeded with the height as it is now, so an anchor on a page that is
-    // already laid out reads as settled on the very first frame.
-    let lastHeight = document.documentElement.scrollHeight
-    let wasUnsettled = false
+      if (!id) {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+        return
+      }
 
-    const attempt = () => {
-      const el = document.getElementById(id)
+      const deadline = performance.now() + 2500
+      // Seeded with the height as it is now, so an anchor on a page that is
+      // already laid out reads as settled on the very first frame.
+      let lastHeight = document.documentElement.scrollHeight
+      let wasUnsettled = false
 
-      if (!el) {
-        if (performance.now() < deadline) {
-          frame = requestAnimationFrame(attempt)
+      const attempt = () => {
+        const el = document.getElementById(id)
+
+        if (!el) {
+          // Six of the seven pages are code-split, so the target routinely
+          // does not exist yet when the URL changes.
+          if (performance.now() < deadline) {
+            frame = requestAnimationFrame(attempt)
+            return
+          }
+          window.scrollTo({ top: 0 })
           return
         }
-        // The anchor genuinely does not exist on this page.
-        window.scrollTo({ top: 0 })
-        return
+
+        /*
+          Existing is not the same as being in final position. On a page full
+          of lazy images the target sits near the top for the first few
+          frames, because everything above it still has zero height. Scrolling
+          to it then leaves the reader at the top of a page that afterwards
+          grows to several times the height -- which is how #emergency managed
+          to land ten thousand pixels short of the emergency contacts.
+
+          So re-anchor each frame until the document stops growing.
+        */
+        const height = document.documentElement.scrollHeight
+        const settled = height === lastHeight
+        lastHeight = height
+
+        if (!settled) {
+          // Instant while the layout moves; smooth would fight its own target.
+          el.scrollIntoView({ behavior: 'auto', block: 'start' })
+          wasUnsettled = true
+          if (performance.now() < deadline) frame = requestAnimationFrame(attempt)
+          return
+        }
+
+        el.scrollIntoView({
+          behavior: wasUnsettled || reduced ? 'auto' : 'smooth',
+          block: 'start',
+        })
       }
 
-      /*
-        Existing is not the same as being in final position. On a page full of
-        lazy images the target sits near the top for the first few frames,
-        because everything above it still has zero height. Scrolling to it
-        then leaves the reader at the top of a page that afterwards grows to
-        several times the height — which is exactly how /resources#emergency
-        managed to land 10,000px short of the emergency contacts.
-
-        So re-anchor each frame until the document stops growing.
-      */
-      const height = document.documentElement.scrollHeight
-      const settled = height === lastHeight
-      lastHeight = height
-
-      if (!settled) {
-        // Instant while the layout is still moving; smooth would fight itself.
-        el.scrollIntoView({ behavior: 'auto', block: 'start' })
-        wasUnsettled = true
-        if (performance.now() < deadline) frame = requestAnimationFrame(attempt)
-        return
-      }
-
-      el.scrollIntoView({
-        behavior: wasUnsettled || reduced ? 'auto' : 'smooth',
-        block: 'start',
-      })
+      frame = requestAnimationFrame(attempt)
     }
 
-    frame = requestAnimationFrame(attempt)
-    return () => cancelAnimationFrame(frame)
-  }, [location.pathname, location.hash, reduced])
+    run()
+    window.addEventListener('hashchange', run)
+    return () => {
+      cancel()
+      window.removeEventListener('hashchange', run)
+    }
+  }, [reduced])
 
   const scrollTop = useCallback(
     () => window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }),
