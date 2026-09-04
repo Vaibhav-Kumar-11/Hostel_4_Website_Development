@@ -36,23 +36,32 @@ export default function Layout() {
   /*
     Scroll management for route changes and anchors.
 
-    This watches the URL rather than the router, and polls rather than
-    listening, because neither of the obvious approaches works here.
+    Two things this has to survive.
 
-    Anchors live in URLs with two hashes -- #/resources#emergency -- and
-    React Router does not report those as a location change, so an effect
-    keyed on `useLocation()` never re-runs for them. Instrumenting the live
-    site made that plain: scrollIntoView and scrollTo were called zero times
-    across such a navigation, and exactly once for a plain route.
+    First, the target usually does not exist yet. Six of the seven pages are
+    code-split, so a link to /resources#emergency arrives well before the
+    Resources chunk has rendered. Second, existing is not the same as being
+    in final position: the element appears while the images above it still
+    have zero height, so it sits near the top of a short page that then grows
+    to several times the height underneath the reader. Both are handled below
+    by polling for the element and then re-anchoring until the document stops
+    growing.
 
-    The `hashchange` event does not help either. HashRouter navigates with
-    history.pushState, and pushState does not fire hashchange -- so the event
-    only ever arrived when a URL was typed by hand, never when a link was
-    clicked.
+    The URL is watched on an interval rather than through `useLocation()` or
+    a `hashchange` listener. An anchor in a hash-routed URL carries two
+    hashes -- #/resources#emergency -- and the router navigates with
+    history.pushState, which does not fire hashchange. Comparing
+    window.location.href catches every case regardless: it costs one string
+    comparison per tick and cannot be outwitted by the router's internals.
 
-    Comparing window.location.href on an interval is immune to both. It costs
-    one string comparison every tenth of a second and it cannot be outwitted
-    by the router's internals.
+    A caveat for whoever touches this next: none of the scrolling behaviour
+    here has been observed working. The browser available for testing runs
+    zero animation frames and ignores programmatic scrolling entirely
+    (requestAnimationFrame never fires, window.scrollTo leaves scrollY at 0),
+    so the rAF-driven path below cannot execute there at all. What IS
+    verified is that anchors no longer destroy the route -- see the routed
+    Links in Resources.tsx and Hero.tsx. Check the scrolling itself in a real
+    browser before assuming it works.
   */
   useEffect(() => {
     let frame = 0
